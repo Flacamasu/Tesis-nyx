@@ -1,0 +1,6 @@
+.buscar{
+  display: flex;
+  flex-direction: column;
+  color: #003b4e;
+  height: 100vh;
+}

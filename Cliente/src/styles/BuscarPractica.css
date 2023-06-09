@@ -1,0 +1,121 @@
+p {
+  margin: 0;
+  font-family: 'Play', sans-serif;
+}
+
+.buscar-todo {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  justify-self: center;
+  width: 85%;
+  height: 100vh;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  
+}
+
+.buscar-practica {
+  font-weight: lighter;
+  font-family: 'Play', sans-serif;
+}
+
+.buscar-cuadro {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  border: 2px solid black;
+}
+
+.buscar-filtros {
+  width: 300px;
+  background-color: blueviolet;
+  border-right: 2px solid black;
+}
+
+.buscar-filtros-titulo {
+  display: flex;
+  height: 40px;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 2px solid black;
+}
+.buscar-filtros-titulo p{
+  padding-left: 40px;
+  padding-right: 40px;
+  margin: 0;
+  font-size: 2.1em;
+  font-family: 'Play', sans-serif;
+}
+.buscar-filtros-titulo button{
+  width: 100%;
+  height: 100%;
+}
+
+.buscar-filtros-componentes {
+  display: flex;
+  flex-direction: column;
+  width:100%;
+  position: relative;
+  font-size: 1.3em;
+}
+
+.buscar-filtros-ubicacion {
+
+  height: 100px;
+  background-color: aqua;
+  border-bottom: 2px solid black;
+  align-items: center;
+  
+}
+.buscar-filtros-subtitulo{
+  height: 40px;
+  text-align: center;
+  margin-top: 5px;
+}
+.buscar-filtros-x{
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  right: 0;
+  margin-top: 3px;
+  margin-right: 5px;
+  border: 1px solid black;
+  text-align: center;
+  font-size: 0.8em;
+}
+.buscar-filtros-ubicacion input{
+  text-align: center;
+  width: 200px;
+}
+
+
+.buscar-filtros-remuneracion {
+  height: 180px;
+  background-color: aqua;
+  border-bottom: 2px solid black;
+}
+
+.buscar-filtros-puntuacion {
+  height: 100px;
+  background-color: aqua;
+  border-bottom: 2px solid black;
+}
+
+.buscar-filtros-horario {
+  height: 140px;
+  background-color: aqua;
+  border-bottom: 2px solid black;
+}
+
+.buscar-filtros-modalidad {
+  height: 135px;
+  background-color: aqua;
+  border-bottom: 2px solid black;
+}
+
+
+.buscar-resultados {
+  width: 100%;
+  background-color: brown;
+}
