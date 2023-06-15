@@ -8,9 +8,9 @@ p {
   flex-direction: column;
   align-self: center;
   justify-self: center;
-  width: 85%;
+  width: 95%;
   height: 100vh;
-  margin-top: 20px;
+  margin-top: 5px;
   margin-bottom: 40px;
   
 }
@@ -29,16 +29,17 @@ p {
 
 .buscar-filtros {
   width: 300px;
-  background-color: blueviolet;
+  background-color: #e9f9da;
   border-right: 2px solid black;
 }
 
 .buscar-filtros-titulo {
   display: flex;
   height: 40px;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   border-bottom: 2px solid black;
+  background-color: #004d66;
 }
 .buscar-filtros-titulo p{
   padding-left: 40px;
@@ -46,24 +47,33 @@ p {
   margin: 0;
   font-size: 2.1em;
   font-family: 'Play', sans-serif;
+  padding: 0;
+  padding-left: 80px;
+  color: white;
+  font-weight: 700;
 }
 .buscar-filtros-titulo button{
   width: 100%;
   height: 100%;
 }
-
+.buscar-filtros-candado{
+  all: unset;
+  text-align: right;
+  cursor: pointer;
+}
 .buscar-filtros-componentes {
   display: flex;
   flex-direction: column;
   width:100%;
   position: relative;
   font-size: 1.3em;
+  background-color: #e9f9da;
 }
 
 .buscar-filtros-ubicacion {
 
-  height: 100px;
-  background-color: aqua;
+  height: 120px;
+
   border-bottom: 2px solid black;
   align-items: center;
   
@@ -72,50 +82,237 @@ p {
   height: 40px;
   text-align: center;
   margin-top: 5px;
+  font-weight:bold;
+  
 }
-.buscar-filtros-x{
+
+
+.buscar-filtros-boton-x{
+  all: unset;
   position: absolute;
-  height: 20px;
-  width: 20px;
   right: 0;
   margin-top: 3px;
   margin-right: 5px;
-  border: 1px solid black;
+  width: 25px;
+  height: 25px;
+  box-sizing: border-box;
+  padding: 0;
+  cursor: pointer;
+}
+.buscar-filtros-boton-x-provisional{
+  margin: 0;
+  box-sizing: border-box;  
+}
+.buscar-filtros-boton-x-provisional:active{
+  opacity: 0.5;
+}
+
+.buscar-filtros-x{
+  position: absolute;
+
+  right: 0;
+  margin-top: 3px;
+  margin-right: 5px;
   text-align: center;
   font-size: 0.8em;
 }
 .buscar-filtros-ubicacion input{
   text-align: center;
   width: 200px;
+  margin-top: 10px;
 }
+
 
 
 .buscar-filtros-remuneracion {
-  height: 180px;
-  background-color: aqua;
+  height: 150px;
   border-bottom: 2px solid black;
+  align-items: center;
 }
 
+.buscar-filtros-remuneracion-rango {
+  width: 220px;
+  margin-top: 20px;
+}
+
+
+input[type='range'],
+input[type='range']::-webkit-slider-runnable-track,
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  height: 6px;
+  background: #004d66;
+  border: none;
+  border-radius: 3px;
+}
+input[type=range]::-webkit-slider-thumb {
+  border: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: #004d66;
+  cursor: pointer;
+  margin-top: -6px;
+  border: 3px solid #e9f9da;
+  width: 20px;
+  height: 20px;
+}
+
+
+.buscar-filtros-remuneracion-rango-numeros {
+  display: flex;
+  justify-content: space-between;
+  width: 230px;
+  margin-top: 3px;
+}
+.buscar-filtros-remuneracion-rango-numeros p{
+  font-size: 14px;
+}
+.buscar-filtros-remuneracion-valor {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.buscar-filtros-remuneracion-dinero {
+  margin-top: 1px;
+  border: none;
+  font-size: 0.9em;
+  background-color: inherit;
+  width: 8ch;
+  color: #004d66;;
+}
+input[type="number"]::-webkit-inner-spin-button, 
+input[type="number"]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+}
+.buscar-filtros-remuneracion-dinero:focus {
+  outline: none;
+}
+
+
+
+
+
+
 .buscar-filtros-puntuacion {
-  height: 100px;
-  background-color: aqua;
+  height: 110px;
+  align-items: center;
   border-bottom: 2px solid black;
 }
 
 .buscar-filtros-horario {
-  height: 140px;
-  background-color: aqua;
+  height: 150px;
   border-bottom: 2px solid black;
+}
+
+.buscar-filtros-checkboxes {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
 }
 
 .buscar-filtros-modalidad {
-  height: 135px;
-  background-color: aqua;
+  height: 140px;
+
   border-bottom: 2px solid black;
 }
 
+.buscar-filtros-checkboxes-texto {
+  font-size: 20px;
+  font-family: 'Play', sans-serif;
+  
+}
 
 .buscar-resultados {
   width: 100%;
-  background-color: brown;
+  background-color: #e9f9da;
+}
+
+.buscar-filtros--disabled{
+  opacity: 0.5; /* Aquí cambias la opacidad para que parezca deshabilitado */
+  cursor: not-allowed; /* Cambias el cursor para indicar que el control deslizante está deshabilitado */
+}
+
+/*Resultados*/
+.buscar-resultados {
+  display: flex;
+  flex-direction: column;
+}
+.buscar-resultados-barra {
+  display: flex;
+}
+.buscar-resultados-barra-inputBusqueda{
+  padding: 0;
+  border: none;
+  height: 39px;
+  width: 650px;
+  outline: none;
+  margin: 0;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black;
+  vertical-align: top;
+  font-size: 1.8em;
+}
+.buscar-resultados-barra-inputBusqueda:focus{
+  outline: none;
+}
+.buscar-resultados-barra-inputOrdenar {
+  padding: 0;
+  border: none;
+  height: 40px;
+  width: 220px;
+  outline: none;
+  margin: 0;
+  vertical-align: top;
+  font-size: 1.8em;
+  border-bottom: 1px solid black;
+}
+.buscar-resultados-barra-enviar {
+  display: flex;
+  height: 40px;
+  font-size: 1.8em;
+  border: none;
+  border-left: 1px solid black;
+  border-bottom: 1px solid black;
+  border-right: 1px solid black;
+  vertical-align: top;
+  text-align: center;
+  align-items: center;
+}
+.buscar-resultados-barra-enviar:active {
+  opacity: 0.5;
+}
+
+.buscar-resultados-contenido {
+  overflow: auto;
+  max-height:680px;
+}
+.buscar-resultados-contenido-cuadro{
+  display: flex;
+  flex-direction: column;
+  height: 200px;
+  border-bottom: 1px solid black;
+  border-top: 1px solid black;
+}
+.buscar-resultados-contenido-cuadro-titulo {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 5px;
+}
+.buscar-resultados-contenido-cuadro-titulo h1 {
+  margin: 0 0 5px;
+}
+.buscar-resultados-contenido-cuadro-descripcion {
+  margin: 0 5px 20px;
+  font-size: 1.1em;
+}
+.buscar-resultados-contenido-cuadro-etiqueta {
+  display: flex;
+}
+.buscar-resultados-contenido-cuadro-etiqueta p{
+  margin-left: 5px;
+  margin-right: 20px ;
 }
