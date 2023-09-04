@@ -7,7 +7,7 @@ function BusquedaInicio({data}) {
       <div className='busqueda-contenedor'>
         <h2 className='busqueda-pregunta'>¿Qué estás buscando?</h2>
         <FormularioInicio data = {data}/>
-        <img src={require(`../imagenes/bich3.png`)} alt='nyz' className='img-nyx'/>
+        <img src={require(`../imagenes/nyxbich1.png`)} alt='nyz' className='img-nyx'/>
       </div>
       <img src={require(`../imagenes/lun2.png`)} alt='' className='img-modoNocturno'></img>
       <div className='portal-empresa'>

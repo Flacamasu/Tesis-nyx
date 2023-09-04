@@ -1,8 +1,11 @@
 import '../styles/BuscarPractica.css'
 import { useLocation } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import {Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Input, Label} from 'reactstrap';
+import { AiFillStar,AiFillLock,AiFillUnlock,AiFillCloseSquare,AiOutlineSearch, AiFillHeart } from 'react-icons/ai';
+import { BsShareFill, BsThreeDots } from "react-icons/bs";
+import { FaHeart } from "react-icons/fa";
 
-import { AiFillStar,AiFillLock,AiFillUnlock,AiFillCloseSquare,AiOutlineSearch } from 'react-icons/ai';
 
 function BuscarPractica() {
 
@@ -26,6 +29,8 @@ function BuscarPractica() {
   const [x2Horario, setX2Horario] = useState(false);
   const [x2Modalidad, setX2Modalidad] = useState(false);
   
+  const [abierto, setAbierto] = useState(false);
+
   const cambioXUbicacion = () => {
     setX2Ubicacion(!x2Ubicacion);
   };
@@ -69,7 +74,38 @@ function BuscarPractica() {
     });
   };
 
+  const clickOferta = (postulacion) => {
+    setAbierto(!abierto);
+    if(abierto == false) setPostulacionSeleccionada(postulacion);
+  }
 
+  const [postulaciones, setPostulaciones] = useState([]);
+  
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/postulaciones')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error al cargar los datos");
+        }
+        return response.json();
+      })
+      .then((postulaciones) => {
+        console.log(postulaciones);
+        setPostulaciones(postulaciones);
+      })
+      .catch((error) => console.log(error));
+  }, []); 
+
+  const [postulacionSeleccionada, setPostulacionSeleccionada] = useState(null);
+
+  const fecha = new Date(postulacionSeleccionada?.fecha);
+  const dia = fecha.getDate();
+  const mes = fecha.getMonth();
+  const ano = fecha.getFullYear();
+  const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+  const nombreMes = meses[mes];
+  const fechaFormateada = `Publicado el ${dia} de ${nombreMes} de ${ano}`;
 
   return(
     <div className='buscar-todo'>
@@ -136,7 +172,7 @@ function BuscarPractica() {
                       key={i} 
                       size={30} 
                       onClick={() => cambioEstrellas(i)} 
-                      color={i < rating ? "blue" : "grey"} 
+                      color={i < rating ? "#edc400" : "grey"} 
                     />
                   )
                 })}
@@ -170,10 +206,10 @@ function BuscarPractica() {
                   <input 
                     type="checkbox" 
                     name="rotativo"
-                    checked={checkedItems.rotativo} 
+                    checked={checkedItems.flexible} 
                     onChange={handleChange} 
                   />
-                  Rotativo
+                  Flexible
                 </label>
               </div>
             </div>
@@ -205,151 +241,130 @@ function BuscarPractica() {
             </div>
           </div>
 
-          <div className='buscar-resultados'>
-            <div className='buscar-resultados-barra'>
-              <input className='buscar-resultados-barra-inputBusqueda' type="text" />
-              <select name="select" className='buscar-resultados-barra-inputOrdenar' defaultValue="">
-                <option value="" disabled>Ordenar por:</option>
-                <option value="value1">Mejor evaluado</option>
-                <option value="value2">Más recientes</option>
-                <option value="value3">Más cercanos</option>
-              </select>
-              <button className='buscar-resultados-barra-enviar'>Buscar<AiOutlineSearch size={40}/></button>
-            </div>
-            <div className='buscar-resultados-contenido'>
-              <div className='buscar-resultados-contenido-cuadro'>
-                <div className='buscar-resultados-contenido-cuadro-titulo'>
-                  <h1>Desarrollador web | Rgb.co</h1>
-                  <h1>5 star</h1>
-                </div>
-                <p className='buscar-resultados-contenido-cuadro-descripcion'>
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit. Vitae tempora illo doloremque minus laudantium architecto 
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                </p>
-                <div className='buscar-resultados-contenido-cuadro-etiqueta'>
-                  <p>1111</p>
-                  <p>2222</p>
-                  <p>3333</p>
-                  <p>4444</p>
-                </div>
+            <div className='buscar-resultados'>
+              <div className='buscar-resultados-barra'>
+                <input className='buscar-resultados-barra-inputBusqueda' type="text" />
+                <select name="select" className='buscar-resultados-barra-inputOrdenar' defaultValue="">
+                  <option value="" disabled>Ordenar por:</option>
+                  <option value="value1">Mejor evaluado</option>
+                  <option value="value2">Más recientes</option>
+                  <option value="value3">Más cercanos</option>
+                </select>
+                <button className='buscar-resultados-barra-enviar'>Buscar<AiOutlineSearch size={40}/></button>
               </div>
-              <div className='buscar-resultados-contenido-cuadro'>
-                <div className='buscar-resultados-contenido-cuadro-titulo'>
-                  <h1>Desarrollador web | Rgb.co</h1>
-                  <h1>5 star</h1>
-                </div>
-                <p className='buscar-resultados-contenido-cuadro-descripcion'>
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit. Vitae tempora illo doloremque minus laudantium architecto 
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                </p>
-                <div className='buscar-resultados-contenido-cuadro-etiqueta'>
-                  <p>1111</p>
-                  <p>2222</p>
-                  <p>3333</p>
-                  <p>4444</p>
-                </div>
-              </div>
-              <div className='buscar-resultados-contenido-cuadro'>
-                <div className='buscar-resultados-contenido-cuadro-titulo'>
-                  <h1>Desarrollador web | Rgb.co</h1>
-                  <h1>5 star</h1>
-                </div>
-                <p className='buscar-resultados-contenido-cuadro-descripcion'>
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit. Vitae tempora illo doloremque minus laudantium architecto 
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                </p>
-                <div className='buscar-resultados-contenido-cuadro-etiqueta'>
-                  <p>1111</p>
-                  <p>2222</p>
-                  <p>3333</p>
-                  <p>4444</p>
-                </div>
-              </div>
-              <div className='buscar-resultados-contenido-cuadro'>
-                <div className='buscar-resultados-contenido-cuadro-titulo'>
-                  <h1>Desarrollador web | Rgb.co</h1>
-                  <h1>5 star</h1>
-                </div>
-                <p className='buscar-resultados-contenido-cuadro-descripcion'>
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit. Vitae tempora illo doloremque minus laudantium architecto 
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                </p>
-                <div className='buscar-resultados-contenido-cuadro-etiqueta'>
-                  <p>1111</p>
-                  <p>2222</p>
-                  <p>3333</p>
-                  <p>4444</p>
-                </div>
-              </div>
-              <div className='buscar-resultados-contenido-cuadro'>
-                <div className='buscar-resultados-contenido-cuadro-titulo'>
-                  <h1>Desarrollador web | Rgb.co</h1>
-                  <h1>5 star</h1>
-                </div>
-                <p className='buscar-resultados-contenido-cuadro-descripcion'>
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit. Vitae tempora illo doloremque minus laudantium architecto 
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                </p>
-                <div className='buscar-resultados-contenido-cuadro-etiqueta'>
-                  <p>1111</p>
-                  <p>2222</p>
-                  <p>3333</p>
-                  <p>4444</p>
-                </div>
-              </div>
-              <div className='buscar-resultados-contenido-cuadro'>
-                <div className='buscar-resultados-contenido-cuadro-titulo'>
-                  <h1>Desarrollador web | Rgb.co</h1>
-                  <h1>5 star</h1>
-                </div>
-                <p className='buscar-resultados-contenido-cuadro-descripcion'>
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit. Vitae tempora illo doloremque minus laudantium architecto 
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                </p>
-                <div className='buscar-resultados-contenido-cuadro-etiqueta'>
-                  <p>1111</p>
-                  <p>2222</p>
-                  <p>3333</p>
-                  <p>4444</p>
-                </div>
-              </div>
-              <div className='buscar-resultados-contenido-cuadro'>
-                <div className='buscar-resultados-contenido-cuadro-titulo'>
-                  <h1>Desarrollador web | Rgb.co</h1>
-                  <h1>5 star</h1>
-                </div>
-                <p className='buscar-resultados-contenido-cuadro-descripcion'>
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit. Vitae tempora illo doloremque minus laudantium architecto 
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                  numquam doloribus vel debitis. Cum necessitatibus provident at praesentium laboriosam hic tempore amet beatae inventore?
-                </p>
-                <div className='buscar-resultados-contenido-cuadro-etiqueta'>
-                  <p>1111</p>
-                  <p>2222</p>
-                  <p>3333</p>
-                  <p>4444</p>
-                </div>
-              </div>
+              <div className='buscar-resultados-contenido'>
+              
+                {postulaciones.map(postulacion => (
+                  <div key={postulacion.id_postulacion} className='buscar-resultados-contenido-cuadro' onClick={() => clickOferta(postulacion)}>
+                    <div className='buscar-resultados-contenido-cuadro-titulo'>
+                    
+                      <h1>{postulacion.titulo} | {postulacion.empresa}</h1>
+                      <h1>{postulacion.puntuacion}</h1>
+                    </div>
+                    <p className='buscar-resultados-contenido-cuadro-descripcion'>
+                      {postulacion.descripcion}
+                    </p>
+                    <div className='buscar-resultados-contenido-cuadro-etiqueta'>
+
+                      {postulacion.tags.split(',').map((tag, index) => (
+                          <p key={index}>{tag}</p>
+                      ))}
+                  
+                    </div>
+                  </div>
+                ))}
+
+                <Modal isOpen={abierto} className='modal-practicas'>
+
+                    <div className='modal-volver'>
+                      <Button onClick={clickOferta}>Volver</Button>
+                      <img src={require(`../imagenes/nyxbich2.png`)} alt='' className='img-bichnx'></img>
+                    </div>
+                    <ModalBody>
+                      <div className='modal-contenido'>
+                        <div className='modal-titulo'>
+                          <h1>{postulacionSeleccionada ? postulacionSeleccionada.titulo : ''}</h1>
+                          <div>
+                            {[...Array(5)].map((star, i) => {
+                              return (
+                                <AiFillStar 
+                                  key={i} 
+                                  size={40} 
+                                  onClick={() => cambioEstrellas(i)} 
+                                  color={i < postulacionSeleccionada?.puntuacion ? "#edc400" : "grey"} 
+                                />
+                              )
+                            })}
+                          </div>
+                        </div>
+                        <span class="modal-titulo-linea"></span>
+                        <div className='modal-empresa'>
+                          <h2>Para {postulacionSeleccionada ? postulacionSeleccionada.empresa : ''}</h2>
+                          <div >
+                            {[...Array(5)].map((star, i) => {
+                              return (
+                                <AiFillStar 
+                                  key={i} 
+                                  size={25} 
+                                  onClick={() => cambioEstrellas(i)} 
+                                  color={i < postulacionSeleccionada?.puntuacion ? "#edc400" : "grey"} 
+                                />
+                              )
+                            })}
+                          </div>
+                        </div>
+                        <div className='modal-tags'>
+                        {postulacionSeleccionada && postulacionSeleccionada.tags.split(',').map((tag, index) => (
+                          <div className='figura' key={index}>
+                            <p>{tag}</p>
+                          </div>
+                          
+                        ))}
+                        </div>
+                        <div className='modal-descripcion'>
+                          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
+                            dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut 
+                            est ex? Aliquid provident placeat architecto optio. Sint!
+                            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel delectus beatae, ex quo error ipsum, 
+                            corrupti pariatur tempore modi cumque officiis temporibus eveniet et! Culpa blanditiis rem in commodi harum?
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore, quia cumque aperiam ipsum ipsa tempore 
+                            recusandae corporis hic aliquid deserunt commodi asperiores atque placeat! Quisquam dolores dolorum 
+                            recusandae veniam tempore?
+                          </p>
+                          <br/>
+                          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
+                            dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut 
+                            est ex? Aliquid provident placeat architecto optio. Sint!
+                            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel delectus beatae, ex quo error ipsum, 
+                            corrupti pariatur tempore modi cumque officiis temporibus eveniet et! Culpa blanditiis rem in commodi harum?
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore, quia cumque aperiam ipsum ipsa tempore 
+                            recusandae corporis hic aliquid deserunt commodi asperiores atque placeat! Quisquam dolores dolorum 
+                            recusandae veniam tempore?
+                          </p>
+                          <br/>
+                          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
+                            dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut.
+                          
+                            
+                          </p>
+                        </div>
+                        
+                        <div className='modal-publicacion'>
+                          <p>{fechaFormateada}</p>
+                          <div className='modal-publicacion-postulacion'>
+                            <Button>Postular a esta vacante</Button>
+                            <div className='modal-publicacion-postulacion-anexos'>
+                              <BsThreeDots size={35} color="#074154" className='icon-postulacion'/>
+                              <FaHeart size={35} color="#074154" className='icon-postulacion'/>
+                              <BsShareFill size={35} color="#074154" className='icon-postulacion'/>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                    </ModalBody>
+                </Modal>
+              
             </div>
           </div>
         </div>

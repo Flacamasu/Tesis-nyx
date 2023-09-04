@@ -44,6 +44,17 @@ function FormularioInicio({data}) {
           value={locacion}
           onChange={(e) => setLocacion(e.target.value)}
         />
+        <select className='barra-input barra-input-' defaultValue='pagaTrue'>
+          <option value="pagaFalse">Todas</option>
+          <option value="pagaTrue">Pagada</option>
+        </select>
+        <select className='barra-input' defaultValue={"pagaFalse"}>
+          <option value="pagaFalse">5</option>
+          <option value="pagaTrue">4</option>
+          <option value="pagaTrue">3</option>
+          <option value="pagaTrue">2</option>
+          <option value="pagaTrue">1</option>
+        </select>
         
         <button className='boton-buscar' onClick={handleClick}>Buscar</button>
       </form>

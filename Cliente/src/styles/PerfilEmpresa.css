@@ -1,0 +1,251 @@
+.empresa-todo {
+  margin-left: 40px;
+  margin-right: 40px;
+}
+.empresa-barra {
+  height: 150px;
+  width: 100%;
+  display: flex;
+}
+.empresa-barra-nombre {
+ display: flex;
+ width: 800px;
+ height: 100%;
+ background-color: #efffe1;
+  justify-content: center;
+  align-items: center;
+}
+.empresa-barra-nombre p{
+  font-size: 5em;
+  font-family: 'Play', sans-serif;;
+  font-weight: bolder;
+  padding-left: 50px;
+}
+.empresa-barra-nombre-img{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 40px;
+  margin-left: 20px;
+}
+.empresa-barra-nombre-img img{
+  height: 100%;
+}
+.empresa-barra-info {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: #bcd3a7;
+  justify-content: flex-start;
+  align-items: center;
+}
+.empresa-barra-info-direcciones{
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  height: 100%;
+  width: 100%;
+}
+.empresa-barra-info-direcciones p{
+  font-size: 1.3em;
+  color: #3b4e2a;
+  font-weight: bold;
+  font-family: 'Play', sans-serif;
+}
+.empresa-barra-info-puntuacion {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 30px;
+}
+.empresa-descripcion{
+  
+  width: 100%;
+  height: auto;
+  position: relative;
+}
+
+.empresa-descripcion p {
+  padding: 5px;
+  color: #047094;
+  margin-top: 10px;
+  font-size: 1.3em;
+  margin-left: 15px;
+  margin-right: 15px;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
+.empresa-ofertas {
+  width: 100%;
+}
+.empresa-ofertas-departamento {
+  margin: 5px;
+  margin-bottom: 15px;
+  color: #047094;
+  font-size: 1.8em;
+  font-weight: bold;
+  background-color: #efffe1;
+  cursor: pointer;
+  
+}
+.titulo {
+  border-bottom: 3px solid #075269;
+  display: flex;
+  justify-content: space-between;
+  padding-left: 13px;
+}
+.icono {
+  font-size: 1.3em;
+  padding-right: 10px;
+}
+.empresa-ofertas-departamento-oferta{
+  padding: 5px;
+  border-bottom: 3px solid #5f9497;
+}
+.empresa-ofertas-departamento-oferta:hover{
+  background-color: #bcd3a7;
+  transition: 0.15s;
+}
+.modal-practicas{
+  background-color: rgba(24, 24, 24, 0.85);
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+.modal-contenido{
+  display: flex;
+  flex-direction: column;
+  background-color: #d1e5c0;
+  width: 1700px;
+  height: 730px;
+}
+.modal-volver{
+  display: flex;
+  justify-content: space-between;
+  color: #d1e5c0;
+  position: relative;
+}
+.modal-volver button{
+  background-color: transparent;
+  color: #d1e5c0;
+  border: none;
+  margin-bottom: 5px;
+  font-size: 1.5em;
+  font-family:'Play';
+}
+.modal-volver button:hover {
+  cursor: pointer;
+}
+.img-bichnx{
+  width: 150px;
+  position: absolute;
+  right: 0;
+  margin-top: -79.4px;
+  top: 0;
+}
+.modal-titulo{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-titulo h1, .modal-titulo p{
+  margin: 5px;
+  color:#074154;
+  font-size: 3em;
+  font-weight: 700;
+  margin-left: 20px;
+}
+.modal-titulo div{
+  margin-right: 20px;
+}
+.modal-titulo-linea{
+  border-bottom: 4px solid #000;
+  width: 50%;
+  margin-left: 12px;
+}
+.modal-empresa{
+  display: flex;
+  align-items: center;
+}
+.modal-empresa h2, .modal-empresa p{
+  margin: 5px;
+  margin-left: 20px;
+  color: #074154;
+}
+.modal-tags{
+  display: flex;
+  margin-left: 25px;
+  margin-top: 10px;
+}
+.figura {
+  display: flex;
+  background-color: #166a85;
+  text-align: center;
+  justify-content: center;
+  width: auto;
+  height: 25px;
+  margin-right: 20px;
+  clip-path: polygon(25% 0, 100% 0, 100% 100%, 25% 100%, 0 51%);
+}
+.figura p{
+  color: white;
+  padding-left: 10px ;
+  padding-top: 2px;
+  margin: 0 10px;
+}
+.modal-publicacion{
+  display: flex;
+  align-items: last baseline;
+  justify-content: space-between;
+  margin-left: 35px;
+  height: 100%;
+  margin-bottom: 20px;
+}
+.modal-publicacion-postulacion{
+  display: flex;
+  align-items: center;
+ 
+}
+.modal-publicacion-postulacion Button{
+  background-color: #2dc880;
+  border: none;
+  padding: 10px;
+  color: #dceed4;
+  font-size: 2em;
+  font-family: 'Play';
+  font-weight: 600;
+}
+.modal-descripcion{
+  margin-left: 30px;
+  margin-right: 300px;
+  margin-top: 20px;
+}
+.modal-descripcion p{
+  color: #1d93b9;
+  font-size: 1.2em;
+  font-family: 'Prompt', sans-serif;
+  font-weight: 100;
+  
+}
+.modal-publicacion p{
+  color:#074154; 
+  font-size: 1.3em;
+}
+.modal-publicacion-postulacion-anexos{
+  display: flex;
+  flex-direction: column;
+  margin: 0 20px;
+  text-align: center;
+}
+.icon-postulacion{
+  margin-bottom: 7px;
+}

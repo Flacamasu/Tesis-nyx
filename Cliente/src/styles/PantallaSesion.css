@@ -1,0 +1,56 @@
+.sesion-todo {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.sesion-contenedor {
+  margin-top: 60px;
+  width: 600px;
+  height: 70vh;
+  background-color: #e9f9da;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.sesion-titulo {
+  font-family: 'Play', sans-serif;
+  font-size: 4em;
+  width: 100%;
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+.sesion-imagen {
+  width: 120px;
+}
+
+.form-usuario{
+    height: 40px;
+    width: 500px;
+    border: none;
+    font-size: 0.4em;
+    background-color: #f4ffea;
+    font-size: 1.6em;
+    outline: none;
+    color: #003b4e;
+    font-family: 'Prompt', sans-serif;
+    font-weight: 500;
+    
+}
+
+.form-usuario-abajo {
+  color: #1e9492;
+  font-size: 1.2em;
+  margin-bottom: 20px;
+  font-weight: bold;
+}

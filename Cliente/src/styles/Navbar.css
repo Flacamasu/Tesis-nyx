@@ -1,3 +1,8 @@
+a {
+  text-decoration: none; 
+  color: inherit;
+  outline: none; 
+}
 .navbar-contenedor {
   height: 90px;
   background-color: #2dc880;
@@ -12,12 +17,6 @@
   background-color: #004d66;
   color: white;
   align-items: center;
-}
-
-.navbar-logo a {
-  text-decoration: none; 
-  color: inherit;
-  outline: none; 
 }
 
 .navbar-logo h1 {
@@ -42,16 +41,32 @@
   font-family: 'Play', sans-serif;
   display: flex;
   padding: 0 20px;
-  border-right: rgb(20, 20, 20) 1px solid;
+  
   align-items: center;
   justify-content: center;
   font-size: 2.1em;
 }
 .opcion-navegar--borde {
   border-right: none;
-  border-left: rgb(20, 20, 20) 1px solid;
+ 
 }
 
 .img-unab {
   height: 70px;
+}
+
+.opcion-navegar-buscar {
+  background-color: #0e8c8d;
+}
+
+.opcion-navegar-empresas {
+  background-color: #11a190;
+}
+
+.opcion-navegar-registro {
+  background-color: #11a090;
+}
+
+.opcion-navegar-logo{
+  background-color: #0e8c8d;
 }
