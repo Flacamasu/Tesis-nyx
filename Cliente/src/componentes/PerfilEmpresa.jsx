@@ -1,12 +1,15 @@
 import '../styles/PerfilEmpresa.css'
 import React, { useState,useEffect } from 'react';
 import { AiFillStar } from 'react-icons/ai';
-import {Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Input, Label} from 'reactstrap';
+import {Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Input, Label, Dropdown, DropdownItem, DropdownMenu, DropdownToggle} from 'reactstrap';
 import { BsShareFill, BsThreeDots } from "react-icons/bs";
 import { FaHeart } from "react-icons/fa";
-
+import { useLocation } from 'react-router-dom';
 
 function PerfilEmpresa() {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const idEmpresa = Number(queryParams.get('id'));
   
   const [empresas, setEmpresas] = useState([]);
   const [postulaciones, setPostulaciones] = useState([]);
@@ -86,13 +89,13 @@ function PerfilEmpresa() {
     const postulacion = postulaciones.filter((postulacion) => postulacion.id_empresa === id);
     return postulacion;
   };
-  const empresa = getEmpresaPorId(1);
+  const empresa = getEmpresaPorId(idEmpresa);
     console.log(empresa);
 
-  const departamento =  getDepartamentosPorEmpresa(1);
+  const departamento =  getDepartamentosPorEmpresa(idEmpresa);
     console.log(departamento);
   
-  const postulacion =  getPostulaciones(1);
+  const postulacion =  getPostulaciones(idEmpresa);
     console.log(postulacion);
 
   const binaryData = new Uint8Array(empresa?.logo.data);
@@ -145,7 +148,9 @@ const toggleDepartamento = (nombreDepartamento) => {
         <p>{empresa?.descripcion}</p>
       </div>
       <div className='empresa-ofertas'>
-        {departamentos?.map((departamento, index) => (
+        {departamentos
+          .filter(departamento => departamento.id_empresa === idEmpresa)
+          .map((departamento, index) => (
           <div className='empresa-ofertas-departamento' key={index} > 
             <div className="titulo" onClick={() => toggleDepartamento(departamento.nombre)}>
               {departamento.nombre} 

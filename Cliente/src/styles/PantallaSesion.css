@@ -8,7 +8,7 @@
 .sesion-contenedor {
   margin-top: 60px;
   width: 600px;
-  height: 70vh;
+  height: 60vh;
   background-color: #e9f9da;
   display: flex;
   flex-direction: column;
@@ -22,16 +22,17 @@
   text-align: center;
 }
 
-.sesion-titulo {
+.sesion-titulo1 {
   font-family: 'Play', sans-serif;
   font-size: 4em;
   width: 100%;
   text-align: center;
   margin-top: 30px;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 }
-.sesion-imagen {
-  width: 120px;
+.sesion-imagen1 {
+  
+  height: 170px;
 }
 
 .form-usuario{
@@ -52,5 +53,33 @@
   color: #1e9492;
   font-size: 1.2em;
   margin-bottom: 20px;
+  font-weight: bold;
+}
+.form-boton1{
+  background-color: #2dc880;
+  height: 43px;
+  
+  font-size: 1.6em;
+  font-family: 'Play', sans-serif;
+  font-weight: 600;
+  color: #003b4e;
+  margin-top: 15px;
+  border: none;
+  width: 130px;
+}
+
+.form-usuario-abajo-abajo{
+  display: flex;
+  flex-direction: column;
+  justify-content:space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.form-usuario-abajo-cosas{
+  margin-bottom: 20px;
+}
+.form-usuario-abajo-cosas a{
+  color: #32b0da;
   font-weight: bold;
 }

@@ -59,3 +59,9 @@ form {
     transition: .1s;
     background-color: #76a14f;
 }
+
+.barra-estrellas {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

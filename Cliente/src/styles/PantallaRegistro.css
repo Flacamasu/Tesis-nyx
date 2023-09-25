@@ -1,0 +1,81 @@
+.sesion-todo {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.sesion-contenedor {
+  margin-top: 60px;
+  width: 600px;
+  height: auto;
+  background-color: #e9f9da;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.sesion-titulo {
+  font-family: 'Play', sans-serif;
+  font-size: 4em;
+  width: 100%;
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+.sesion-imagen {
+  width: 120px;
+}
+
+.form-usuario{
+    height: 40px;
+    width: 500px;
+    border: none;
+    font-size: 0.4em;
+    background-color: #f4ffea;
+    font-size: 1.6em;
+    outline: none;
+    color: #003b4e;
+    font-family: 'Prompt', sans-serif;
+    font-weight: 500;
+    
+}
+
+.form-usuario-abajo {
+  color: #1e9492;
+  font-size: 1.2em;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+.form-boton{
+  background-color: #2dc880;
+  height: 50px;
+  width: auto;
+  font-size: 1.6em;
+  font-family: 'Play', sans-serif;
+  font-weight: 600;
+  color: #003b4e;
+  margin-top: 15px;
+  border: none;
+}
+
+.form-usuario-abajo-abajo{
+  display: flex;
+  flex-direction: column;
+  justify-content:space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.form-usuario-abajo-cosas{
+  margin-top: 20px;
+  margin-bottom: 10px;
+}

@@ -172,7 +172,7 @@ function BuscarPractica() {
                       key={i} 
                       size={30} 
                       onClick={() => cambioEstrellas(i)} 
-                      color={i < rating ? "#edc400" : "grey"} 
+                      color={i < rating ? "#024e69" : "grey"} 
                     />
                   )
                 })}
@@ -259,7 +259,16 @@ function BuscarPractica() {
                     <div className='buscar-resultados-contenido-cuadro-titulo'>
                     
                       <h1>{postulacion.titulo} | {postulacion.empresa}</h1>
-                      <h1>{postulacion.puntuacion}</h1>
+                      <h1>{[...Array(5)].map((star, i) => {
+                              return (
+                                <AiFillStar 
+                                  key={i} 
+                                  size={40} 
+                                  onClick={() => cambioEstrellas(i)} 
+                                  color={i < postulacion.puntuacion  ? "#024e69" : "grey"} 
+                                />
+                              )
+                            })}</h1>
                     </div>
                     <p className='buscar-resultados-contenido-cuadro-descripcion'>
                       {postulacion.descripcion}
@@ -267,7 +276,10 @@ function BuscarPractica() {
                     <div className='buscar-resultados-contenido-cuadro-etiqueta'>
 
                       {postulacion.tags.split(',').map((tag, index) => (
-                          <p key={index}>{tag}</p>
+                        <div className='figura-antes' key={index}>
+                          <p>{tag}</p>
+                        </div>
+                          
                       ))}
                   
                     </div>
@@ -291,7 +303,7 @@ function BuscarPractica() {
                                   key={i} 
                                   size={40} 
                                   onClick={() => cambioEstrellas(i)} 
-                                  color={i < postulacionSeleccionada?.puntuacion ? "#edc400" : "grey"} 
+                                  color={i < postulacionSeleccionada?.puntuacion ? "#024e69" : "grey"} 
                                 />
                               )
                             })}
@@ -307,7 +319,7 @@ function BuscarPractica() {
                                   key={i} 
                                   size={25} 
                                   onClick={() => cambioEstrellas(i)} 
-                                  color={i < postulacionSeleccionada?.puntuacion ? "#edc400" : "grey"} 
+                                  color={i < postulacionSeleccionada?.puntuacion ? "#024e69" : "grey"} 
                                 />
                               )
                             })}

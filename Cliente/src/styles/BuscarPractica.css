@@ -2,7 +2,9 @@ p {
   margin: 0;
   font-family: 'Play', sans-serif;
 }
-
+.buscar{
+  min-width: 1880px;
+}
 .buscar-todo {
   display: flex;
   flex-direction: column;
@@ -12,7 +14,6 @@ p {
   height: 100vh;
   margin-top: 5px;
   margin-bottom: 40px;
-  
 }
 
 .buscar-practica {
@@ -333,8 +334,9 @@ input[type="number"]::-webkit-outer-spin-button {
   display: flex;
   flex-direction: column;
   background-color: #d1e5c0;
-  width: 1700px;
-  height: 730px;
+  width: 1196px;
+  height: 555px;
+  overflow: auto;
 }
 .modal-volver{
   display: flex;
@@ -406,6 +408,23 @@ input[type="number"]::-webkit-outer-spin-button {
   clip-path: polygon(25% 0, 100% 0, 100% 100%, 25% 100%, 0 51%);
 }
 .figura p{
+  color: white;
+  padding-left: 10px ;
+  padding-top: 2px;
+  margin: 0 10px;
+}
+.figura-antes {
+  display: flex;
+  background-color: #166a85;
+  text-align: center;
+  justify-content: center;
+  width: auto;
+  height: 25px;
+  margin-right: 20px;
+  margin-left: 20px;
+  clip-path: polygon(25% 0, 100% 0, 100% 100%, 25% 100%, 0 51%);
+}
+.figura-antes p{
   color: white;
   padding-left: 10px ;
   padding-top: 2px;

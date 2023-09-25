@@ -65,8 +65,30 @@ a {
 
 .opcion-navegar-registro {
   background-color: #11a090;
+  padding: 0;
 }
 
 .opcion-navegar-logo{
   background-color: #0e8c8d;
+}
+.btn-secondary{
+  height: 100%;
+  padding: 0 20px;
+  background-color: #11a190;
+  border: none;
+ cursor: pointer;
+}
+.opcion-navegar-nombre{
+  font-size: 2.1em;
+}
+.dropdown{
+  height: 100%;
+  width: 100%;
+}
+.opcion-navegar-sesion{
+  padding: 0 10px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

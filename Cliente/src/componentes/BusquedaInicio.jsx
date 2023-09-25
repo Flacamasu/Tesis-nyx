@@ -10,9 +10,7 @@ function BusquedaInicio({data}) {
         <img src={require(`../imagenes/nyxbich1.png`)} alt='nyz' className='img-nyx'/>
       </div>
       <img src={require(`../imagenes/lun2.png`)} alt='' className='img-modoNocturno'></img>
-      <div className='portal-empresa'>
-        Portal para empresas
-      </div>
+      
     </div>    
   );
 }
