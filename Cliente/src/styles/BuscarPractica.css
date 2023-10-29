@@ -49,7 +49,7 @@ p {
   font-size: 2.1em;
   font-family: 'Play', sans-serif;
   padding: 0;
-  padding-left: 80px;
+  padding-left: 25px;
   color: white;
   font-weight: 700;
 }
@@ -249,13 +249,14 @@ input[type="number"]::-webkit-outer-spin-button {
   padding: 0;
   border: none;
   height: 39px;
-  width: 650px;
+  width: 1200px;
   outline: none;
   margin: 0;
   border-right: 1px solid black;
   border-bottom: 1px solid black;
   vertical-align: top;
   font-size: 1.8em;
+  background-color: #f5fcef;
 }
 .buscar-resultados-barra-inputBusqueda:focus{
   outline: none;
@@ -282,6 +283,7 @@ input[type="number"]::-webkit-outer-spin-button {
   vertical-align: top;
   text-align: center;
   align-items: center;
+  background-color: #f5fcef;
 }
 .buscar-resultados-barra-enviar:active {
   opacity: 0.5;
@@ -329,6 +331,19 @@ input[type="number"]::-webkit-outer-spin-button {
   justify-content: center;
   align-items: center;
   z-index: 100;
+}
+.modal-publicacion-rem1{
+  margin-top: 15px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.modal-publicacion-rem{
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+.modal-publicacion-ubi{
+  margin-bottom: 25px;
+  font-weight: bold;
 }
 .modal-contenido{
   display: flex;
@@ -432,18 +447,17 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 .modal-publicacion{
   display: flex;
-  align-items: last baseline;
+  align-items: center;
   justify-content: space-between;
   margin-left: 35px;
   height: 100%;
   margin-bottom: 20px;
 }
-.modal-publicacion-postulacion{
+.modal-publicacion-oferta{
   display: flex;
-  align-items: center;
- 
+  align-self: center;
 }
-.modal-publicacion-postulacion Button{
+.modal-publicacion-oferta Button{
   background-color: #2dc880;
   border: none;
   padding: 10px;
@@ -451,6 +465,7 @@ input[type="number"]::-webkit-outer-spin-button {
   font-size: 2em;
   font-family: 'Play';
   font-weight: 600;
+  margin-right: 20px;
 }
 .modal-descripcion{
   margin-left: 30px;
@@ -468,12 +483,31 @@ input[type="number"]::-webkit-outer-spin-button {
   color:#074154; 
   font-size: 1.3em;
 }
-.modal-publicacion-postulacion-anexos{
+.modal-publicacion-oferta-anexos{
   display: flex;
   flex-direction: column;
-  margin: 0 20px;
+  margin: 0 20px 0;
   text-align: center;
 }
-.icon-postulacion{
+.modal-fecha{
+margin-bottom: 10px;
+}
+.icon-oferta{
   margin-bottom: 7px;
+}
+.buscar-filtros-tick{
+  all: unset;
+  text-align: right;
+  cursor: pointer;
+  color: #48869c;
+  font-size: 2em;
+  margin-bottom: 5px;
+  margin-right: 5px;
+}
+.buscar-filtros-tick:hover{
+  color: rgb(255, 255, 255);
+}
+.btn-aceptar{
+  background-color: #48869c;;
+  color: white;
 }

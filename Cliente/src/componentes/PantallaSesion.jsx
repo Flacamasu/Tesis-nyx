@@ -1,13 +1,23 @@
 import '../styles/PantallaSesion.css';
 import React, { useState, useEffect } from 'react';
 import { useUser } from './UserContext';
+import swal from 'sweetalert';
 
 function PantallaSesion() {
   const { setUser } = useUser();
   const [empresas, setEmpresas] = useState([]);
   const [usuario, setUsuario] = useState('');
   const [contraseña, setContraseña] = useState('');
+  const [isEmpresa, setIsEmpresa] = useState(true);
+  const [errorMensaje, setErrorMensaje] = useState(null);
 
+  const handleEmpresaClick = () => {
+    setIsEmpresa(true);
+  };
+
+  const handleEstudianteClick = () => {
+    setIsEmpresa(false);
+  };
   useEffect(() => {
     fetch('http://localhost:5000/api/empresas')
       .then((response) => {
@@ -24,34 +34,66 @@ function PantallaSesion() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-      
+    if(isEmpresa){
+      const response = await fetch('http://localhost:5000/api/autenticarEmpresa', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ usuario, contraseña }),
+      });
+      const data = await response.json();
+      if (data.autenticado) {
+        console.log("Usuario valido");
+        setUser(data.usuario);
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('usuario', JSON.stringify(data.usuario));
+        localStorage.setItem('tUsuario', data.tUsuario);
+        setUser(data.usuario);
+        console.log("Data recibida:", data);
+        swal("Bienvenido!", "Has iniciado sesión correctamente", "success");
+      } else {
+        console.log("Usuario invalido")
+        swal("Error!", "Usuario o contraseña incorrectos", "error");
+      }
+    } else {
+      const response = await fetch('http://localhost:5000/api/autenticarEstudiante', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ usuario, contraseña }),
+      });
+      const data = await response.json();
+      if (data.autenticado) {
+        console.log("Usuario valido");
+        setUser(data.usuario);
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('usuario', JSON.stringify(data.usuario));
+        localStorage.setItem('tUsuario', data.tUsuario);
+        setUser(data.usuario);
+        console.log("Data recibida:", data);
+        swal("Bienvenido!", "Has iniciado sesión correctamente", "success");
+      } else {
+        console.log("Usuario invalido")
+        swal("Error!", "Usuario o contraseña incorrectos", "error");
+      }
+    }
     // Aquí puedes hacer una solicitud HTTP para autenticar al usuario.
-    const response = await fetch('http://localhost:5000/api/autenticar', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ usuario, contraseña }),
-    });
+    
 
-    const data = await response.json();
   
 
-    if (data.autenticado) {
-      console.log("Usuario valido");
-      setUser(data.usuario);
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('usuario', JSON.stringify(data.usuario));
-      setUser(data.usuario);
-      console.log("Data recibida:", data);
-    } else {
-      console.log("Usuario invalido")
-    }
   };
 
   return (
     <div className="sesion-todo">
       <div className="sesion-contenedor">
+        <div className='sesion-elecciones'>
+          <button className='sesion-eleccion' onClick={handleEmpresaClick}>Empresa</button>
+          <button className='sesion-eleccion' onClick={handleEstudianteClick}>Estudiante</button>
+        </div>
+        
         <p className='sesion-titulo1'>Iniciar Sesión</p>
         <img src={require(`../imagenes/nyxbich3.png`)} alt='' className='sesion-imagen1'></img>
         <form onSubmit={handleSubmit} className="form">

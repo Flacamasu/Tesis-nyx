@@ -83,3 +83,10 @@
   color: #32b0da;
   font-weight: bold;
 }
+.sesion-elecciones{
+  width: 100%;
+}
+.sesion-eleccion{
+  width: 50%;
+  height: 30px;
+}

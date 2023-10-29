@@ -1,0 +1,12 @@
+.modal-form{
+  display: flex;
+  flex-direction: column;
+}
+.modal-ofertas{
+  width:140%;
+  align-items: center;
+}
+.form-textarea{
+  resize: none;
+  min-height: 200px;
+}

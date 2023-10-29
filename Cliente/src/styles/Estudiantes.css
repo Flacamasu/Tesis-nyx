@@ -1,0 +1,5 @@
+.empresas{
+  display: flex;
+  flex-direction: column;
+  color: #003b4e;
+}

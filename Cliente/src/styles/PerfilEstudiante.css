@@ -1,0 +1,107 @@
+.estudiante-todo {
+  display: flex;
+  
+  width: 100%;
+  height: 100vh;
+  background-color: #d1e5c0;
+}
+.estudiante-perfil1{
+  width: 50%;
+  height: 100%;
+  background-color: #e9f9da;
+  display: flex;
+  flex-direction: column;
+}
+.estudiante-perfil1-datos{
+  width: 100%;
+  height: 230px;
+  background-color: #004d66;
+  display: flex;
+  
+}
+.estudiante-perfil-datos-letra{
+
+  width: 760px;
+  height: 100%;
+  background-color: #f4fdec;
+
+}
+.estudiante-perfil-datos-letra-nombre{
+  padding: 5px;
+  font-size: 3em;
+  padding-left: 12px;
+  font-family: 'Play', sans-serif;
+  color: #014862;
+  font-weight: 800;
+}
+.estudiante-perfil-datos-letra-carrera{
+  font-size: 1.5em;
+  padding-left: 12px;
+  margin-bottom: 5px;
+  margin-top: 10px;
+  color: #014862;
+  font-weight: 500;
+  font-family: 'Prompt', sans-serif;
+}
+.estudiante-perfil-datos-letra-mail{
+  font-size: 1.3em;
+  padding-left: 12px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  color: #014862;
+  font-weight: 500;
+  font-family: 'Prompt', sans-serif;
+}
+.estudiante-perfil-datos-letra-numero{
+  font-size: 1.3em;
+  padding-left: 12px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  color: #014862;
+  font-weight: 500;
+  font-family: 'Prompt', sans-serif;
+}
+.estudiante-perfil-datos-imagen{
+  height: 100%;
+  width: 200px;
+  max-width: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.estudiante-perfil-datos-imagen img{
+  height: 200px;
+  width: 200px;
+}
+.estudiante-perfil-datos-imagen p{
+  display: flex;
+  height: 30px;
+  width: 100%;
+  text-align: center;
+  background-color: #003b4e;
+  justify-content: center;
+  align-items: center;
+  color: #d2dce0;
+  font-size: 1.2em;
+}
+.estudiante-perfil-datos-letra-linea{
+  height: 2px;
+  width: 100%;
+  background-color: #e3eadc;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.estudiante-perfil1-descripcion-titulo{
+  font-size: 2em;
+  color: #003b4e;
+  font-weight: bold;
+  margin: 15px;
+}
+.estudiante-perfil1-descripcion-subtitulo{
+  font-size: 1.4em;
+  color: #003b4e;
+  margin: 15px;
+  margin-left: 30px;
+}

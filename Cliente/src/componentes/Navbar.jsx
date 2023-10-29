@@ -7,6 +7,7 @@ import '../styles/custom-bootstrap.css';
 function Navbar(props) {
   const { user } = useUser();
   const [dropdown, setDropdown]=useState(false);
+  const tipoUsuario = localStorage.getItem('tUsuario');
 
   const abrirCerrarDropDown = () => {
     setDropdown(!dropdown);
@@ -15,7 +16,6 @@ function Navbar(props) {
     localStorage.removeItem('usuario');
     window.location.reload();
   }
-
   return(
     
     <div className="navbar-contenedor">
@@ -38,16 +38,28 @@ function Navbar(props) {
           <li className='opcion-navegar opcion-navegar--borde opcion-navegar-registro'>
         
           {user ? (
+            
             <Dropdown isOpen={dropdown} toggle={abrirCerrarDropDown}>
               <DropdownToggle>
                 <p className='opcion-navegar-nombre'>{user.nombre}</p>
               </DropdownToggle>
               <DropdownMenu>
-                <DropdownItem><a href={`/empresas/?id=${user.id_empresa}`}>Ver perfil</a></DropdownItem>
-                <DropdownItem><a href="/empresas/modificar">Modificar perfil</a></DropdownItem>
-                <DropdownItem><a href="/ofertas/crear">Crear oferta</a></DropdownItem>
-                <DropdownItem><a href="/ofertas/modificar">Modificar ofertas</a></DropdownItem>
-                <DropdownItem onClick={cerrarSesion}>Cerrar sesión</DropdownItem>
+              {tipoUsuario === 'empresa' ? (
+                <>
+                  <DropdownItem><a href={`/empresas/?id=${user.id_empresa}`}>Ver perfil</a></DropdownItem>
+                  <DropdownItem><a href="/empresas/modificar">Modificar perfil</a></DropdownItem>
+                  <DropdownItem><a href="/ofertas/crear">Crear oferta</a></DropdownItem>
+                  <DropdownItem><a href="/ofertas/modificar">Modificar ofertas</a></DropdownItem>
+                  <DropdownItem onClick={cerrarSesion}>Cerrar sesión</DropdownItem>
+                </>
+              ) : 
+              <>
+                  <DropdownItem><a href={`/estudiantes/?id=${user.id_estudiante}`}>Ver perfil</a></DropdownItem>
+                  <DropdownItem><a href="/estudiantes/modificar">Modificar perfil</a></DropdownItem>
+                  <DropdownItem><a href={`/estudiantes/postulaciones/?id=${user.id_estudiante}`}>Ver postulaciones</a></DropdownItem>
+                  <DropdownItem><a href={`/estudiantes/postulaciones/guardadas/?id=${user.id_estudiante}`}>Ver postulaciones guardadas</a></DropdownItem>
+                  <DropdownItem onClick={cerrarSesion}>Cerrar sesión</DropdownItem>
+                </>}  
               </DropdownMenu>
             </Dropdown>
           ) : (

@@ -50,7 +50,7 @@ function PerfilEmpresa() {
   }, []); 
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/postulaciones')
+    fetch('http://localhost:5000/api/ofertas')
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error al cargar los datos");
@@ -113,7 +113,34 @@ const [departamentoActivo, setDepartamentoActivo] = useState(null);
 const toggleDepartamento = (nombreDepartamento) => {
   setDepartamentoActivo(departamentoActivo !== nombreDepartamento ? nombreDepartamento : null);
 };
+const [puntuacionEmpresa, setPuntuacionEmpresa] = useState(0);
+  const [nombreEmpresa, setNombreEmpresa] = useState('');
+  useEffect(() => {
+    if (postulacionSeleccionada) {
+      const empresaEncontrada = empresas.find(
+        (empresa) => empresa.id_empresa === postulacionSeleccionada.id_empresa
+      );
+      if (empresaEncontrada) {
+        setPuntuacionEmpresa(empresaEncontrada.puntuacion_total);
+        setNombreEmpresa(empresaEncontrada.nombre);
+      }
+    }
+  }, [postulacionSeleccionada, empresas]);
 
+  const getPuntuacionEmpresa = (id_empresa) => {
+    const empresaEncontrada = empresas.find(
+      (empresa) => empresa.id_empresa === id_empresa
+    );
+  
+    return empresaEncontrada ? empresaEncontrada.puntuacion_total : 0;
+  };
+  
+  const getNombreEmpresa = (id_empresa) => {
+    const empresaEncontrada = empresas.find(
+      (empresa) => empresa.id_empresa === id_empresa
+    );
+    return empresaEncontrada ? empresaEncontrada.nombre : 0;
+  };
   return(
     <div className='empresa-todo'>
       <div className="empresa-barra">
@@ -173,96 +200,108 @@ const toggleDepartamento = (nombreDepartamento) => {
           </div>
         ))}        
       </div>
-  <Modal isOpen={abierto} className='modal-practicas'>
+      <Modal isOpen={abierto} className='modal-practicas'>
 
-    <div className='modal-volver'>
-      <Button onClick={clickOferta}>Volver</Button>
-      <img src={require(`../imagenes/nyxbich2.png`)} alt='' className='img-bichnx'></img>
-    </div>
-    <ModalBody>
-      <div className='modal-contenido'>
-        <div className='modal-titulo'>
-          <h1>{postulacionSeleccionada ? postulacionSeleccionada.titulo : ''}</h1>
-          <div>
-            {[...Array(5)].map((star, i) => {
-              return (
-                <AiFillStar 
-                  key={i} 
-                  size={40} 
-                  onClick={() => cambioEstrellas(i)} 
-                  color={i < postulacionSeleccionada?.puntuacion ? "#edc400" : "grey"} 
-                />
-              )
-            })}
-          </div>
-        </div>
-        <span class="modal-titulo-linea"></span>
-        <div className='modal-empresa'>
-          <h2>Para {postulacionSeleccionada ? postulacionSeleccionada.empresa : ''}</h2>
-          <div >
-            {[...Array(5)].map((star, i) => {
-              return (
-                <AiFillStar 
-                  key={i} 
-                  size={25} 
-                  onClick={() => cambioEstrellas(i)} 
-                  color={i < postulacionSeleccionada?.puntuacion ? "#edc400" : "grey"} 
-                />
-              )
-            })}
-          </div>
-        </div>
-        <div className='modal-tags'>
-        {postulacionSeleccionada && postulacionSeleccionada.tags.split(',').map((tag, index) => (
-          <div className='figura' key={index}>
-            <p>{tag}</p>
-          </div>
-          
-        ))}
-        </div>
-        <div className='modal-descripcion'>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
-            dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut 
-            est ex? Aliquid provident placeat architecto optio. Sint!
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel delectus beatae, ex quo error ipsum, 
-            corrupti pariatur tempore modi cumque officiis temporibus eveniet et! Culpa blanditiis rem in commodi harum?
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore, quia cumque aperiam ipsum ipsa tempore 
-            recusandae corporis hic aliquid deserunt commodi asperiores atque placeat! Quisquam dolores dolorum 
-            recusandae veniam tempore?
-          </p>
-          <br/>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
-            dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut 
-            est ex? Aliquid provident placeat architecto optio. Sint!
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel delectus beatae, ex quo error ipsum, 
-            corrupti pariatur tempore modi cumque officiis temporibus eveniet et! Culpa blanditiis rem in commodi harum?
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore, quia cumque aperiam ipsum ipsa tempore 
-            recusandae corporis hic aliquid deserunt commodi asperiores atque placeat! Quisquam dolores dolorum 
-            recusandae veniam tempore?
-          </p>
-          <br/>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
-            dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut.
-          
-            
-          </p>
-        </div>
+<div className='modal-volver'>
+  <Button onClick={clickOferta}>Volver</Button>
+  <img src={require(`../imagenes/nyxbich2.png`)} alt='' className='img-bichnx'></img>
+</div>
+<ModalBody>
+  <div className='modal-contenido'>
+    <div className='modal-titulo'>
+      <h1>{postulacionSeleccionada ? postulacionSeleccionada.titulo : ''}</h1>
+      <div>
+        {[...Array(5)].map((star, i) => {
+          return (
+            <AiFillStar 
+              key={i} 
+              size={40} 
+              onClick={() => cambioEstrellas(i)} 
+              color={i < getPuntuacionEmpresa(postulacionSeleccionada?.id_empresa) ? "#024e69" : "grey"} 
+            />
+          )
+        })}
         
-        <div className='modal-publicacion'>
-          <p>{fechaFormateada}</p>
-          <div className='modal-publicacion-postulacion'>
-            <Button>Postular a esta vacante</Button>
-            <div className='modal-publicacion-postulacion-anexos'>
-              <BsThreeDots size={35} color="#074154" className='icon-postulacion'/>
-              <FaHeart size={35} color="#074154" className='icon-postulacion'/>
-              <BsShareFill size={35} color="#074154" className='icon-postulacion'/>
-            </div>
-          </div>
-        </div>
+      </div>
+    </div>
+    <span class="modal-titulo-linea"></span>
+    <div className='modal-empresa'>
+      <h2>Para {postulacionSeleccionada ? getNombreEmpresa(postulacionSeleccionada?.id_empresa) : ''}</h2>
+      <div >
+        {[...Array(5)].map((star, i) => {
+          return (
+            <AiFillStar 
+              key={i} 
+              size={25} 
+              onClick={() => cambioEstrellas(i)} 
+              color={i < getPuntuacionEmpresa(postulacionSeleccionada?.id_empresa) ? "#024e69" : "grey"} 
+            />
+          )
+        })}
+      </div>
+    </div>
+    <div className='modal-tags'>
+    {postulacionSeleccionada && postulacionSeleccionada.tags.split(',').map((tag, index) => (
+      <div className='figura' key={index}>
+        <p>{tag}</p>
       </div>
       
-    </ModalBody>
-    </Modal>
+    ))}
+    </div>
+    <div className='modal-descripcion'>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
+        dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut 
+        est ex? Aliquid provident placeat architecto optio. Sint!
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel delectus beatae, ex quo error ipsum, 
+        corrupti pariatur tempore modi cumque officiis temporibus eveniet et! Culpa blanditiis rem in commodi harum?
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore, quia cumque aperiam ipsum ipsa tempore 
+        recusandae corporis hic aliquid deserunt commodi asperiores atque placeat! Quisquam dolores dolorum 
+        recusandae veniam tempore?
+      </p>
+      <br/>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
+        dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut 
+        est ex? Aliquid provident placeat architecto optio. Sint!
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel delectus beatae, ex quo error ipsum, 
+        corrupti pariatur tempore modi cumque officiis temporibus eveniet et! Culpa blanditiis rem in commodi harum?
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore, quia cumque aperiam ipsum ipsa tempore 
+        recusandae corporis hic aliquid deserunt commodi asperiores atque placeat! Quisquam dolores dolorum 
+        recusandae veniam tempore?
+      </p>
+      <br/>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
+        dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut.
+      
+        
+      </p>
+    </div>
+    
+    <div className='modal-publicacion'>
+      <div>
+        <p className='modal-publicacion-rem1'>Remuneración:{0 == postulacionSeleccionada?.remuneracion ? " No posee": " $"+postulacionSeleccionada?.remuneracion}</p>
+        <p className='modal-publicacion-rem'>Ubicación: { 0 == postulacionSeleccionada?.modalidad ? " Online":
+                                                        postulacionSeleccionada?.calle_numero + ", "} 
+                                                        {0 == postulacionSeleccionada?.modalidad ? "" : postulacionSeleccionada?.comuna + ", "}
+                                                        {0 == postulacionSeleccionada?.modalidad ? "" : "Región " + postulacionSeleccionada?.region} 
+                                                        {(0 == postulacionSeleccionada?.modalidad ? "": " (15km)")}</p>
+        <p className='modal-publicacion-ubi'>Horario: {postulacionSeleccionada?.horario}</p>
+        <p>{fechaFormateada}</p>                           
+      </div>
+      
+      <div className='modal-publicacion-postulacion'>
+
+        <Button>Postular a esta vacante</Button>
+        <div className='modal-publicacion-postulacion-anexos'>
+          <BsThreeDots size={35} color="#074154" className='icon-postulacion'/>
+          <FaHeart size={35} color="#074154" className='icon-postulacion'/>
+          <BsShareFill size={35} color="#074154" className='icon-postulacion'/>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</ModalBody>
+</Modal>
     </div>
    
   );
