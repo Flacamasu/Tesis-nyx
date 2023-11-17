@@ -99,7 +99,7 @@ function PerfilEstudiante() {
            
           </div>
           <div className='estudiante-perfil-datos-imagen'>
-            <img src="" alt="" />
+            <img src={require(`../imagenes/estudiante.png`)} alt="" />
             <p>Rut: {estudiante?.usuario}</p>
           </div>
         </div>

@@ -1,16 +1,20 @@
 import '../styles/PantallaRegistro.css';
 import React, { useState, useEffect } from 'react';
 import { useUser } from './UserContext';
+import swal from 'sweetalert';
 
 function PantallaRegistro() {
   const { setUser } = useUser();
   const [empresas, setEmpresas] = useState([]);
   const [nombre, setNombre] = useState('');
   const [usuario, setUsuario] = useState('');
-  const [contraseña, setContraseña] = useState('');
-  const [logo, setLogo] = useState('');
+  const [contrasena, setContrasena] = useState('');
+  const [logo, setLogo] = useState([]);
   const [descripcion, setDescripcion] = useState('');
-  const [direccion, setDireccion] = useState('');
+  const [calle_numero, setCalleNumero] = useState('');
+  const [region, setRegion] = useState('');
+  const [comuna, setComuna] = useState('');
+  const [imagen, setImagen] = useState('');
   const [correo, setCorreo] = useState('');
   const [numero, setNumero] = useState('');
   const [carrera, setCarrera] = useState('');
@@ -24,13 +28,16 @@ function PantallaRegistro() {
   const [estudios, setEstudios] = useState('');
   const [telefono, setTelefono] = useState('');
   const [isEmpresa, setIsEmpresa] = useState(true);
+  const [selectedButton, setSelectedButton] = useState('empresa');
 
   const handleEmpresaClick = () => {
     setIsEmpresa(true);
+    setSelectedButton('empresa');
   };
 
   const handleEstudianteClick = () => {
     setIsEmpresa(false);
+    setSelectedButton('estudiante');
   };
 
   useEffect(() => {
@@ -50,85 +57,146 @@ function PantallaRegistro() {
   const handleSubmit = async (e) => {
     e.preventDefault(); 
     try {
-      // Crear un objeto con los datos del formulario
-      if(isEmpresa){
-        const datosUsuario = {
-          nombre,
-          usuario, // Este es el valor del campo "Rut"
-          contraseña,
-          logo,
-          descripcion,
-          direccion,
-          correo,
-          numero,
-        };
-        
-        const response = await fetch('http://localhost:5000/api/empresaRegistro', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(datosUsuario),
-        });
+    const formData = new FormData();
+    if (isEmpresa) {
+      formData.append('nombre', nombre);
+      formData.append('usuario', usuario);
+      formData.append('contrasena', contrasena);
+      formData.append('logo', logo);  // Archivo añadido aquí
+      formData.append('descripcion', descripcion);
+      formData.append('correo', correo);
+      formData.append('numero', numero);
+      formData.append('calle_numero', calle_numero);
+      formData.append('region', region);
+      formData.append('comuna', comuna);
+      const response = await fetch('http://localhost:5000/api/empresaRegistro', {
+        method: 'POST',
+        body: formData,  // Modificado aquí
+      });
         
         if (!response.ok) {
           throw new Error('Error al registrar el usuario');
         }
+        swal({
+          title: "¡Te has registrado con exito!",
+          icon: "success",
+          buttons: {
+            confirm: {
+              text: "Aceptar",
+              value: true,
+              visible: true,
+              className: "btn-aceptar",
+              closeModal: true
+            }
+          },
+          className: "swal-custom-bg"
+        });
       } else {
-        const datosUsuario = {
-          usuario,
-          nombre,
-          telefono,
-          carrera,
-          descripcion,
-          direccion,
-          correo,
-          contraseña,
-          especialidad,
-          genero,
-          edad,
-          intereses,
-          proyectos,
-          habilidades,
-          conocimientos,
-          estudios
-        };
-
-        const response = await fetch('http://localhost:5000/api/estudianteRegistro', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(datosUsuario),
-        });
+        const formData2 = new FormData();
         
+          formData2.append('usuario', usuario);
+          formData2.append('nombre', nombre);
+          formData2.append('telefono', telefono);
+          formData2.append('imagen', imagen);  // Asumiendo que 'imagen' es un archivo
+          formData2.append('carrera', carrera);
+          formData2.append('descripcion', descripcion);
+          formData2.append('correo', correo);
+          formData2.append('contrasena', contrasena);
+          formData2.append('especialidad', especialidad);
+          formData2.append('genero', genero);
+          formData2.append('edad', edad);
+          formData2.append('intereses', intereses);
+          formData2.append('proyectos', proyectos);
+          formData2.append('habilidades', habilidades);
+          formData2.append('conocimientos', conocimientos);
+          formData2.append('estudios', estudios);
+          formData2.append('calle_numero', calle_numero);
+          formData2.append('region', region);
+          formData2.append('comuna', comuna);
+          
+          const response = await fetch('http://localhost:5000/api/estudianteRegistrop', {
+            method: 'POST',
+            body: formData2,  // Modificado aquí
+          });
         if (!response.ok) {
           throw new Error('Error al registrar el usuario');
         }
-
-      }
-    
+        
+        swal({
+          title: "¡Te has registrado con exito!",
+          icon: "success",
+          buttons: {
+            confirm: {
+              text: "Aceptar",
+              value: true,
+              visible: true,
+              className: "btn-aceptar",
+              closeModal: true
+            }
+          },
+          className: "swal-custom-bg"
+        });
+        }
+      
     } catch (error) {
       console.error(error);
     }
   };
 
+  function formatUsuario(value) {
+    // Verificar si el último carácter es una 'k' o 'K'
+    let endsWithK = value.toLowerCase().endsWith('k');
+
+    // Si el valor termina con 'k' o 'K', eliminar este carácter
+    let cleanedValue = endsWithK ? value.slice(0, -1) : value;
+
+    // Limpiar el valor de entrada de cualquier caracter no numérico
+ 
+    cleanedValue = cleanedValue.replace(/\D+/g, '');
+    
+    if (endsWithK){
+      cleanedValue = cleanedValue+'K'
+    } 
+
+    // Si la longitud del valor limpio es 1 o 2, simplemente devolver el valor limpio
+    if (cleanedValue.length <= 2) {
+      return cleanedValue + (endsWithK ? '-K' : '');
+    }
+
+    // Separar el último dígito para el guion
+    let lastDigit = cleanedValue.slice(-1);
+    let restOfDigits = cleanedValue.slice(0, -1);
+
+    // Formatear el resto de los dígitos con puntos
+    let formattedRest = restOfDigits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+    // Combinar el formato
+    let formattedValue = `${formattedRest}-${lastDigit}`;
+
+    return formattedValue;
+  }
+
+  const handleChange = (event) => {
+    let inputValue = event.target.value;
+    setUsuario(formatUsuario(inputValue));
+  };
   return (
+    
     <div className="sesion-todo">
       <div className="sesion-contenedor">
         <div className='sesion-eleccion'>
-          <button onClick={handleEmpresaClick}>Empresa</button>
-          <button onClick={handleEstudianteClick}>Estudiante</button>
+          <button onClick={handleEmpresaClick} className={selectedButton === 'empresa' ? 'boton-seleccionado boton-seleccion' : 'boton-no-seleccionado boton-seleccion'}>Empresa</button>
+          <button onClick={handleEstudianteClick} className={selectedButton === 'estudiante' ? 'boton-seleccionado boton-seleccion' : 'boton-no-seleccionado boton-seleccion'}>Estudiante</button>
         </div>
         <p className='sesion-titulo'>Registrarse {isEmpresa ? '(Empresa)' : '(Estudiante)'}</p>
         
         <form onSubmit={handleSubmit} className="form">
           <input
-            type="number"
+            type="text"
             placeholder="Rut"
             className={`form-usuario ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}
             value={usuario}
-            onChange={(e) => setUsuario(e.target.value)}
+            onChange={handleChange}
           />
           <p className={`form-usuario-abajo ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}>Rut (sin puntos ni guion)</p>
           <input
@@ -148,31 +216,23 @@ function PantallaRegistro() {
           />
           <p className={`form-usuario-abajo ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}>Número de telefono</p>
           <input
-            type="text"
-            placeholder="logo"
+            type="file"
+            accept="image/*" 
             className={`form-usuario ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}
-            value={logo}
-            onChange={(e) => setLogo(e.target.value)}
+            onChange={(e) => setLogo(e.target.files[0])} 
           />
           <p className={`form-usuario-abajo ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}>Logo</p>
-          <input
-            type="text"
-            placeholder="Descripcion"
-            className={`form-usuario ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}
-            value={descripcion}
+          <textarea
+            placeholder="Descripción"
+            
+            className= {`form-usuario form-textarea form-textarea-empresa ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}
             onChange={(e) => setDescripcion(e.target.value)}
+            value={descripcion}
           />
           <p className={`form-usuario-abajo ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}>Descripción</p>
+
           <input
-            type="text"
-            placeholder="Dirección"
-            className={`form-usuario ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}
-            value={direccion}
-            onChange={(e) => setDireccion(e.target.value)}
-          />
-          <p className={`form-usuario-abajo ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}>Dirección</p>
-          <input
-            type="text"
+            type="email"
             placeholder="Correo"
             className={`form-usuario ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}
             value={correo}
@@ -183,17 +243,41 @@ function PantallaRegistro() {
             type="password"
             placeholder="Contraseña"
             className={`form-usuario ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}
-            value={contraseña}
-            onChange={(e) => setContraseña(e.target.value)}
+            value={contrasena}
+            onChange={(e) => setContrasena(e.target.value)}
           />
           <p className={`form-usuario-abajo ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}>Contraseña</p>
+          <input
+            type="text"
+            placeholder="Calle y número"
+            className={`form-usuario ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}
+            value={calle_numero}
+            onChange={(e) => setCalleNumero(e.target.value)}
+          />
+          <p className={`form-usuario-abajo ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}>Calle y número</p>
+          <input
+            type="text"
+            placeholder="Región"
+            className={`form-usuario ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}
+            value={region}
+            onChange={(e) => setRegion(e.target.value)}
+          />
+          <p className={`form-usuario-abajo ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}>Región</p>
+          <input
+            type="text"
+            placeholder="Comuna"
+            className={`form-usuario ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}
+            value={comuna}
+            onChange={(e) => setComuna(e.target.value)}
+          />
+          <p className={`form-usuario-abajo ${isEmpresa ? '' : 'form-usuario--desaparecer'}`}>Comuna</p>
 
           <input
-            type="number"
+            type="text"
             placeholder="Rut"
             className={`form-usuario ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
             value={usuario}
-            onChange={(e) => setUsuario(e.target.value)}
+            onChange={handleChange}
           />
           <p className={`form-usuario-abajo ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}>Rut (sin puntos ni guion)</p>
           <input
@@ -213,6 +297,13 @@ function PantallaRegistro() {
           />
           <p className={`form-usuario-abajo ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}>Número de telefono</p>
           <input
+            type="file"
+            accept="image/*" 
+            className={`form-usuario ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
+            onChange={(e) => setImagen(e.target.files[0])} 
+          />
+          <p className={`form-usuario-abajo ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}>Foto perfil</p>
+          <input
             type="text"
             placeholder="Carrera"
             className={`form-usuario ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
@@ -220,24 +311,17 @@ function PantallaRegistro() {
             onChange={(e) => setCarrera(e.target.value)}
           />
           <p className={`form-usuario-abajo ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}>Carrera</p>
-          <input
-            type="text"
-            placeholder="Descripcion"
-            className={`form-usuario ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
-            value={descripcion}
+          <textarea
+            placeholder="Descripción"
+            
+            className= {`form-usuario form-textarea form-textarea-empresa ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
             onChange={(e) => setDescripcion(e.target.value)}
+            value={descripcion}
           />
           <p className={`form-usuario-abajo ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}>Descripción</p>
+
           <input
-            type="text"
-            placeholder="Dirección"
-            className={`form-usuario ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
-            value={direccion}
-            onChange={(e) => setDireccion(e.target.value)}
-          />
-          <p className={`form-usuario-abajo ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}>Dirección</p>
-          <input
-            type="text"
+            type="email"
             placeholder="Correo"
             className={`form-usuario ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
             value={correo}
@@ -248,8 +332,8 @@ function PantallaRegistro() {
             type="password"
             placeholder="Contraseña"
             className={`form-usuario ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
-            value={contraseña}
-            onChange={(e) => setContraseña(e.target.value)}
+            value={contrasena}
+            onChange={(e) => setContrasena(e.target.value)}
           />
           <p className={`form-usuario-abajo ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}>Contraseña</p>
           <input
@@ -276,47 +360,70 @@ function PantallaRegistro() {
             onChange={(e) => setEdad(e.target.value)}
           />
           <p className={`form-usuario-abajo ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}>Edad</p>
-          <input
-            type="text"
+          <textarea
             placeholder="Intereses"
-            className={`form-usuario ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
-            value={intereses}
+            
+            className= {`form-usuario form-textarea form-textarea-empresa ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
             onChange={(e) => setIntereses(e.target.value)}
+            value={intereses}
           />
           <p className={`form-usuario-abajo ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}>Intereses</p>
-          <input
-            type="text"
+          <textarea
             placeholder="Proyectos"
-            className={`form-usuario ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
-            value={proyectos}
+            
+            className= {`form-usuario form-textarea form-textarea-empresa ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
             onChange={(e) => setProyectos(e.target.value)}
+            value={proyectos}
           />
           <p className={`form-usuario-abajo ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}>Proyectos</p>
-          <input
-            type="text"
+          <textarea
             placeholder="Habilidades"
-            className={`form-usuario ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
-            value={habilidades}
+            
+            className= {`form-usuario form-textarea form-textarea-empresa ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
             onChange={(e) => setHabilidades(e.target.value)}
+            value={habilidades}
           />
           <p className={`form-usuario-abajo ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}>Habilidades</p>
-          <input
-            type="text"
+          <textarea
             placeholder="Conocimientos"
-            className={`form-usuario ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
-            value={conocimientos}
+            
+            className= {`form-usuario form-textarea form-textarea-empresa ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
             onChange={(e) => setConocimientos(e.target.value)}
+            value={conocimientos}
           />
           <p className={`form-usuario-abajo ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}>Conocimientos</p>
           <input
             type="text"
-            placeholder="Estudios"
+            placeholder="¿Donde estudiaste o estudias?"
             className={`form-usuario ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
             value={estudios}
             onChange={(e) => setEstudios(e.target.value)}
           />
           <p className={`form-usuario-abajo ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}>Estudios</p>
-
+          <input
+            type="text"
+            placeholder="Calle y número"
+            className={`form-usuario ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
+            value={calle_numero}
+            onChange={(e) => setCalleNumero(e.target.value)}
+          />
+          <p className={`form-usuario-abajo ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}>Calle y número</p>
+          <input
+            type="text"
+            placeholder="Región"
+            className={`form-usuario ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
+            value={region}
+            onChange={(e) => setRegion(e.target.value)}
+          />
+          <p className={`form-usuario-abajo ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}>Región</p>
+          <input
+            type="text"
+            placeholder="Comuna"
+            className={`form-usuario ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}
+            value={comuna}
+            onChange={(e) => setComuna(e.target.value)}
+          />
+          <p className={`form-usuario-abajo ${isEmpresa ? 'form-usuario--desaparecer' : ''}`}>Comuna</p>
           <div className='form-usuario-abajo-abajo'>
             <button type="submit" className="form-boton">
               Registrarse

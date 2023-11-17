@@ -62,7 +62,9 @@ a {
 .opcion-navegar-empresas {
   background-color: #11a190;
 }
-
+.opcion-navegar-estudiantes {
+  background-color: #1db6a4;
+}
 .opcion-navegar-registro {
   background-color: #11a090;
   padding: 0;
@@ -91,4 +93,17 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.opcion-navegar-menu{
+  background-color: #11a190 !important;
+  border-radius: 0 !important;
+}
+.dropdown-item:hover{
+  background-color: #18c0ac !important;
+  transition: 0.2s;
+}
+.opcion-navegar-opciones{
+  height: 40px;
+  font-size:1.1em;
+  cursor: pointer;
 }

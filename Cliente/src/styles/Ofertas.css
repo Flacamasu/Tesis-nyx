@@ -3,10 +3,177 @@
   flex-direction: column;
 }
 .modal-ofertas{
-  width:140%;
+  width: calc(100vw - 600px);
   align-items: center;
+}
+.modal-practicantes{
+  width: auto;
+  padding: 0 20px;
 }
 .form-textarea{
   resize: none;
   min-height: 200px;
+}
+.ofertas-column{
+  flex-direction: column;
+}
+.ofertas-tabla{
+  width: 100%;
+  font-size: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  
+}
+.oferta-tabla{
+  width: 100%;
+}
+.oferta-icons{
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+}
+.oferta-estado{
+  
+  white-space: nowrap;
+  
+}
+.tabla-estado--padding{
+  padding-left: 40px;
+}
+.oferta-estado--margin{
+  margin-left: 5px;
+  cursor: pointer;
+}
+.modal-contenido-titulo{
+  color: #003b4e;
+}
+.modal-contenido-titulo-practicantes{
+  margin-bottom: 0;
+  font-size: 2.3em;
+}
+.modal-contenido-titulo-practicantes-agregar{
+  margin-bottom: 0;
+}
+.tabla-postulantes{
+  width: 88%;
+}
+.postulantes-titulos{
+  width: 88%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.7em;
+  color: #003b4e;
+}
+.postulaciones-titulo--margin{
+  margin-top: 20px;
+}
+.postulaciones-estudiante{
+  font-size: 1.6em;
+ 
+}
+.postulacion-estudiante-todo{
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  
+}
+.postulacion-estudiante-texto {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Alinea el contenido al principio de la celda */
+  gap: 10px; /* Espacio entre el nombre y el icono */
+}
+
+
+.postulacion-estudiante-texto-nombre{
+  color: #003b4e;
+}
+.postulacion-estudiante-texto-pendiente{
+  color: #003b4e;
+  margin-right: 19px;
+}
+.postulacion-ver{
+  margin-left: 10px;
+  padding-top: 10px;
+  color: #003b4e;;
+}
+.menu-desplegable {
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.menu-item {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  background-color: #f1f1f1;
+}
+.icons-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #003b4e;
+}
+
+.practicas-tabla{
+  margin-bottom: 0;
+}
+.modal-titulo div{
+  white-space: nowrap;
+}
+table {
+  border-collapse: separate;
+  border-spacing: 20px 15px; 
+  color: #003b4e;/* El primer valor es el espacio horizontal, el segundo es el vertical */
+}
+.oferta-agregar-estudiante{
+  margin: 10px;
+  font-size: 1.6em;
+  font-weight: 600;
+  color: #003b4e;
+  margin-bottom: 25px;
+  cursor: pointer;
+}
+.modal-agregar-form{
+  display: flex;
+  align-items: center;
+}
+.modal-agregar-formgroup{
+  height: 60px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 9px;
+}
+.modal-agregar-input{
+  color: #003b4e;
+  padding: 0 5px;
+}
+.modal-agregar-titulo{
+  color: #003b4e;
+  font-size: 1.2em;
+  font-weight: 600;
+  margin-right: 8px;
+}
+.modal-agregar-boton{
+  background-color: #a2d873;
+  padding: 10px 20px;
+  height: 40px;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+.modal-agregar-boton:hover{
+  transition: 0.3s;
+  background-color: #81af59;
 }

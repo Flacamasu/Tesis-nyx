@@ -193,8 +193,17 @@ function BuscarPractica() {
   
   useEffect(() => {
     const fetchData = async () => {
+      
+      let direccionUsuario; 
       try {
-        const direccionUsuario = user.calle_numero + ', ' + user.comuna + ', ' + user.region;
+        try{
+          if(localStorage.getItem('tUsuario') === 'estudiante'){
+            direccionUsuario = user.calle_numero + ', ' + user.comuna + ', ' + user.region;
+          }
+        } catch {
+          console.log("No es estudiante")
+        }
+        
         const datoBusqueda = {
           termino: practica,
           puntuacion: puntuacion,
@@ -212,7 +221,7 @@ function BuscarPractica() {
           },
           body: JSON.stringify(datoBusqueda),
         });
-  
+        console.log("tas aquiii?");
         if (!response.ok) {
           throw new Error("Error al hacer la petición POST");
         }
@@ -259,10 +268,13 @@ function BuscarPractica() {
           });
           setYaPostulo(false);
         }
+      } else if (tUsuario === 'empresa'){
+          return;
       } else {
         const datosOferta = {
           id_oferta: ofertaSeleccionada.id_oferta,
-          id_estudiante: user.id_estudiante
+          id_estudiante: user.id_estudiante,
+          fecha: new Date()
         };
         const response = await fetch('http://localhost:5000/api/postulacion/agregar', {
           method: 'POST',
@@ -288,7 +300,7 @@ function BuscarPractica() {
         setYaPostulo(true);
       }
     } catch (error) {
-      console.error("error");
+      swal("Error al postular", "Para postular debes de iniciar sesión como estudiante", "warning");
     }
   }
   
@@ -328,17 +340,10 @@ function BuscarPractica() {
     navigate(url);
     window.location.reload();
   }
-  // Filtrar postulaciones basadas en el id_estudiante
-  const postulacionesDelEstudiante = postulaciones?.filter(p => p.id_estudiante === user.id_estudiante);
+ 
 
   // Verificar si alguna de las postulaciones filtradas coincide con el id_oferta de la oferta seleccionada
   const [yaPostulo, setYaPostulo] = useState(false);
-
-  useEffect(() => {
-    const isPostulado = postulacionesDelEstudiante?.some(p => p.id_oferta === ofertaSeleccionada?.id_oferta);
-    setYaPostulo(isPostulado);
-    }, [ofertaSeleccionada]);
-
 
   const calcularDistancia = async (origen, destino) => {
     const service = new window.google.maps.DistanceMatrixService();
@@ -356,7 +361,16 @@ function BuscarPractica() {
             return;
           }
 
-          const distancia = response.rows[0].elements[0].distance.text;
+          try{
+            const distancia = response.rows[0].elements[0].distance.text;
+            if (distancia) {
+              resolve(distancia);
+            } else {
+              reject("No se pudo obtener la distancia");
+            }
+          } catch{
+            
+          }
           if (distancia) {
             resolve(distancia);
           } else {
@@ -366,8 +380,9 @@ function BuscarPractica() {
       );
     });
   };
+  const tUsuario = localStorage.getItem('tUsuario');
   const mostrarDistancia = async () => {
-    if (!user || !ofertaSeleccionada) {
+    if (!user || !ofertaSeleccionada || tUsuario === 'empresa' ) {
       console.error('User o ofertaSeleccionada no están definidos');
       return;
     }
@@ -380,19 +395,42 @@ function BuscarPractica() {
       return;
     }
   
-    console.log(direccionUsuario);
+ 
     try {
       const resultado = await calcularDistancia(direccionUsuario, otraDireccion);
       setDistancia(resultado);
     } catch (error) {
       console.error(error);
+      
     }
   };
   useEffect(() => {
     if (ofertaSeleccionada?.modalidad !== 'Remoto') {
       mostrarDistancia();
     }
+    comprobarPostulacion();
   }, [user, ofertaSeleccionada]);
+
+  const comprobarPostulacion = async () => {
+    
+    try {
+      // Comprobamos si el usuario ya se postuló a la oferta
+      const checkResponse = await fetch(`http://localhost:5000/api/postulacion/check/${ofertaSeleccionada.id_oferta}/${user.id_estudiante}`);
+      const exists = await checkResponse.json();
+      console.log(exists);
+      if (exists.alreadyApplied) {
+        setYaPostulo(true);
+        console.log("hola")
+      } else if (tUsuario === 'empresa'){
+        return;
+      } else {
+        setYaPostulo(false);
+
+      }
+    } catch (error) {
+      console.log("mal");
+    }
+  }
   return(
     <div className='buscar-todo'>
         <h1 className='buscar-practica'>Prácticas encontradas con la busqueda "{practica}":</h1>
@@ -545,18 +583,16 @@ function BuscarPractica() {
                   value={inputPractica}
                   onChange={handleInputChange}
                 />
-                <select name="select" className='buscar-resultados-barra-inputOrdenar' defaultValue="">
-                  <option value="" disabled>Ordenar por:</option>
-                  <option value="value1">Mejor evaluado</option>
-                  <option value="value2">Más recientes</option>
-                  <option value="value3">Más cercanos</option>
-                </select>
+
                 <button className='buscar-resultados-barra-enviar' onClick={handleClick}>Buscar<AiOutlineSearch size={40}/></button>
               </div>
               <div className='buscar-resultados-contenido'>
               
-                {ofertas.map(oferta => (
-                  <div key={oferta.id_oferta} className='buscar-resultados-contenido-cuadro' onClick={() => clickOferta(oferta)}>
+                {ofertas.map((oferta, index) => (
+                  <div key={oferta.id_oferta} 
+                      className={`buscar-resultados-contenido-cuadro ${index === 0 ? 'buscar-resultados-contenido-cuadro-recomendado' : ''}`}
+                      onClick={() => clickOferta(oferta)}>
+                    <p className={`buscar-resultados-contenido-cuadro-recomendado-texto ${index === 0 ? 'buscar-resultados-contenido-cuadro-recomendado-texto--aparecer' : ''}`}>Oferta recomendada</p>
                     <div className='buscar-resultados-contenido-cuadro-titulo'>
                     
                       <h1>{oferta.titulo} | {getNombreEmpresa(oferta.id_empresa)}</h1>
@@ -629,7 +665,7 @@ function BuscarPractica() {
                           </div>
                         </div>
                         <div className='modal-tags'>
-                        {ofertaSeleccionada && ofertaSeleccionada.tags.split(',').map((tag, index) => (
+                        {ofertaSeleccionada && ofertaSeleccionada?.tags?.split(',').map((tag, index) => (
                           <div className='figura' key={index}>
                             <p>{tag}</p>
                           </div>
@@ -637,30 +673,8 @@ function BuscarPractica() {
                         ))}
                         </div>
                         <div className='modal-descripcion'>
-                          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
-                            dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut 
-                            est ex? Aliquid provident placeat architecto optio. Sint!
-                            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel delectus beatae, ex quo error ipsum, 
-                            corrupti pariatur tempore modi cumque officiis temporibus eveniet et! Culpa blanditiis rem in commodi harum?
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore, quia cumque aperiam ipsum ipsa tempore 
-                            recusandae corporis hic aliquid deserunt commodi asperiores atque placeat! Quisquam dolores dolorum 
-                            recusandae veniam tempore?
-                          </p>
-                          <br/>
-                          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
-                            dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut 
-                            est ex? Aliquid provident placeat architecto optio. Sint!
-                            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel delectus beatae, ex quo error ipsum, 
-                            corrupti pariatur tempore modi cumque officiis temporibus eveniet et! Culpa blanditiis rem in commodi harum?
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore, quia cumque aperiam ipsum ipsa tempore 
-                            recusandae corporis hic aliquid deserunt commodi asperiores atque placeat! Quisquam dolores dolorum 
-                            recusandae veniam tempore?
-                          </p>
-                          <br/>
-                          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
-                            dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut.
-                          
-                            
+                          <p>
+                            {ofertaSeleccionada?.descripcion}
                           </p>
                         </div>
                         
@@ -671,7 +685,7 @@ function BuscarPractica() {
                                                                             ofertaSeleccionada?.calle_numero + ", "} 
                                                                             {"Remoto" === ofertaSeleccionada?.modalidad ? "" : ofertaSeleccionada?.comuna + ", "}
                                                                             {"Remoto" === ofertaSeleccionada?.modalidad ? "" : "Región " + ofertaSeleccionada?.region} 
-                                                                            {("Remoto" === ofertaSeleccionada?.modalidad ? "": " ("+distancia+")")}</p>
+                                                                            {("Remoto" === ofertaSeleccionada?.modalidad ? "": distancia ? " ("+distancia+")" : "")}</p>
                             <p className='modal-publicacion-ubi'>Horario: {ofertaSeleccionada?.horario}</p>
                             <p className='modal-fecha'>{fechaFormateada}</p>                           
                           </div>

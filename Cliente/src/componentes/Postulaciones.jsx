@@ -5,28 +5,90 @@ import { AiFillStar,AiFillLock,AiFillUnlock,AiFillCloseSquare,AiOutlineSearch, A
 import {Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Input, Label, Dropdown, DropdownItem, DropdownMenu, DropdownToggle} from 'reactstrap';
 import { FaHeart } from "react-icons/fa";
 import { BsShareFill, BsThreeDots } from "react-icons/bs";
+import swal from 'sweetalert';
 
 function Postulaciones() {
   const { user } = useUser();
   const [empresas, setEmpresas] = useState([]);
   const [postulaciones, setPostulaciones] = useState([]);
   const [ofertas, setOfertas] = useState([]);
-  const [postulacionSeleccionada, setPostulacionSeleccionada] = useState(null);
+  const [ofertaSeleccionada, setOfertaSeleccionada] = useState(null);
   const [puntuacionEmpresa, setPuntuacionEmpresa] = useState(0);
   const [nombreEmpresa, setNombreEmpresa] = useState('');
   const [abierto, setAbierto] = useState(false);
-  const yaPostulo = postulaciones.some(p => p.id_oferta === postulacionSeleccionada?.id_oferta);
+  const [distancia, setDistancia] = useState(null);
+  const tUsuario = localStorage.getItem('tUsuario');
+  const calcularDistancia = async (origen, destino) => {
+    const service = new window.google.maps.DistanceMatrixService();
+    
+    return new Promise((resolve, reject) => {
+      service.getDistanceMatrix(
+        {
+          origins: [origen],
+          destinations: [destino],
+          travelMode: 'DRIVING'
+        },
+        (response, status) => {
+          if (status !== "OK") {
+            reject("Error con el servicio de Google Maps");
+            return;
+          }
+          try{
+            const distancia = response.rows[0].elements[0].distance.text;
+            if (distancia) {
+              resolve(distancia);
+            } else {
+              reject("No se pudo obtener la distancia");
+            }
+          } catch{
+            
+          }
+          
+        }
+      );
+    });
+  };
+  const mostrarDistancia = async () => {
+    if (!user || !ofertaSeleccionada || tUsuario === 'empresa') {
+      console.error('User o ofertaSeleccionada no están definidos');
+      return;
+    }
+  
+    const direccionUsuario = user.calle_numero + ', ' + user.comuna + ', ' + user.region;
+    const otraDireccion = ofertaSeleccionada.calle_numero + ', ' + ofertaSeleccionada.comuna + ', ' + ofertaSeleccionada.region;
+  
+    if (!direccionUsuario || !otraDireccion) {
+      console.error('DireccionUsuario o otraDireccion no están definidos');
+      return;
+    }
+
+    try {
+      const resultado = await calcularDistancia(direccionUsuario, otraDireccion);
+      setDistancia(resultado);
+    } catch (error) {
+      console.error(error);
+      
+    }
+  };
+  useEffect(() => {
+    if (ofertaSeleccionada?.modalidad !== 'Remoto') {
+      mostrarDistancia();
+    }
+    comprobarPostulacion();
+  }, [user, ofertaSeleccionada]);
+  const [yaPostulo, setYaPostulo] = useState(false);
   const [rating, setRating] = useState(0); 
   const cambioEstrellas = (i) => {
     setRating(i + 1);
   };
-  const fecha = new Date(postulacionSeleccionada?.fecha);
+  const fecha = new Date(ofertaSeleccionada?.fecha);
   const dia = fecha.getDate();
   const mes = fecha.getMonth();
   const ano = fecha.getFullYear();
   const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
   const nombreMes = meses[mes];
-  const fechaFormateada = `Publicado el ${dia} de ${nombreMes} de ${ano}`;
+  const fechaFormateada = `${dia} de ${nombreMes} del ${ano}`;
+
   useEffect(() => {
     fetch('http://localhost:5000/api/empresas')
       .then((response) => {
@@ -89,16 +151,16 @@ function Postulaciones() {
 
 
   useEffect(() => {
-    if (postulacionSeleccionada) {
+    if (ofertaSeleccionada) {
       const empresaEncontrada = empresas.find(
-        (empresa) => empresa.id_empresa === postulacionSeleccionada.id_empresa
+        (empresa) => empresa.id_empresa === ofertaSeleccionada.id_empresa
       );
       if (empresaEncontrada) {
         setPuntuacionEmpresa(empresaEncontrada.puntuacion_total);
         setNombreEmpresa(empresaEncontrada.nombre);
       }
     }
-  }, [postulacionSeleccionada, empresas]);
+  }, [ofertaSeleccionada, empresas]);
 
   const getPuntuacionEmpresa = (id_empresa) => {
     const empresaEncontrada = empresas.find(
@@ -116,25 +178,140 @@ function Postulaciones() {
   };
   const clickOferta = (postulacion) => {
     setAbierto(!abierto);
-    if(abierto === false) setPostulacionSeleccionada(postulacion);
+    if(abierto === false) setOfertaSeleccionada(postulacion);
+  }
+  const postularOferta = async (e) => {
+    e.preventDefault();
+    try {
+      const checkResponse = await fetch(`http://localhost:5000/api/postulacion/check/${ofertaSeleccionada.id_oferta}/${user.id_estudiante}`);
+      const exists = await checkResponse.json();
+  
+      if (exists.alreadyApplied) {
+        const deleteResponse = await fetch(`http://localhost:5000/api/postulacion/delete/${ofertaSeleccionada.id_oferta}/${user.id_estudiante}`, {
+          method: 'DELETE',
+        });
+        if (deleteResponse.ok) {
+          swal({
+            title: "Dejaste de postular",
+            icon: "error",
+            className: "swal-custom-bg",
+            buttons: {
+              confirm: {
+                text: "Aceptar",
+                value: true,
+                visible: true,
+                className: "btn-aceptar",
+                closeModal: true
+              }
+            },
+          });
+          setYaPostulo(false);
+        }
+      } else {
+        const datosOferta = {
+          id_oferta: ofertaSeleccionada.id_oferta,
+          id_estudiante: user.id_estudiante,
+          fecha: new Date()
+        };
+        const response = await fetch('http://localhost:5000/api/postulacion/agregar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(datosOferta),
+        });
+        swal({
+          title: "Has postulado",
+          icon: "success",
+          buttons: {
+            confirm: {
+              text: "Aceptar",
+              value: true,
+              visible: true,
+              className: "btn-aceptar",
+              closeModal: true
+            }
+          },
+          className: "swal-custom-bg"
+        });
+        setYaPostulo(true);
+      }
+    } catch (error) {
+      swal("Error al postular", "Para postular debes de iniciar sesión como estudiante", "warning");
+    }
+  }
+  const comprobarPostulacion = async () => {
+    
+    try {
+      // Comprobamos si el usuario ya se postuló a la oferta
+      const checkResponse = await fetch(`http://localhost:5000/api/postulacion/check/${ofertaSeleccionada.id_oferta}/${user.id_estudiante}`);
+      const exists = await checkResponse.json();
+      console.log(exists);
+      if (exists.alreadyApplied) {
+        setYaPostulo(true);
+        console.log("hola")
+      } else if (tUsuario === 'empresa'){
+        return;
+      } else {
+        setYaPostulo(false);
+
+      }
+    } catch (error) {
+      console.log("mal");
+    }
   }
   return (
     <div className="postulaciones-todo">
       <p className='postulaciones-titulo'>Postulaciones: </p>
       <div className="postulaciones-ofertas">
-        {postulaciones.map(postulacionActual => (
-          ofertas
-            .filter(oferta => oferta.id_oferta === postulacionActual.id_oferta)
-            .map((postulacionFiltrada, i) => (
-              <p 
-                className='empresa-ofertas-departamento-oferta' 
-                key={i} 
-                onClick={() => clickOferta(postulacionFiltrada)}
-              >
-                {postulacionFiltrada.titulo}
-              </p>
-            ))
-        ))}
+      <table cellspacing="15">
+            <thead>
+                <tr>
+                    <th>Postulación</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+            {postulaciones.map(postulacionActual => {
+
+              const fecha = new Date(postulacionActual?.fecha);
+              const dia = fecha.getDate();
+              const mes = fecha.getMonth();
+              const ano = fecha.getFullYear();
+              const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+              const nombreMes = meses[mes];
+              const fechaFormateada = `${dia} de ${nombreMes} del ${ano}`; 
+
+              return ofertas
+                  .filter(oferta => oferta.id_oferta === postulacionActual.id_oferta)
+                  .map((postulacionFiltrada, i) => (
+                      <tr key={postulacionFiltrada.id_oferta}>
+                          <td className='empresa-ofertas-departamento-oferta' 
+                            key={i} 
+                            onClick={() => clickOferta(postulacionFiltrada)}
+                          > 
+                          {postulacionFiltrada.titulo}
+                          </td>
+                          <td className='empresa-ofertas-departamento-oferta empresa-ofertas-departamento-oferta-derecha' 
+                            key={i} 
+                            onClick={() => clickOferta(postulacionFiltrada)}
+                          > 
+                          {fechaFormateada}
+                          </td>
+                          <td className='empresa-ofertas-departamento-oferta' 
+                            key={i} 
+                            onClick={() => clickOferta(postulacionFiltrada)}
+                          > 
+                          {postulacionActual.estado}
+                          </td>
+                      </tr>
+                  ))
+              })}
+
+            </tbody>
+        </table>
+  
       </div>
       <Modal isOpen={abierto} className='modal-practicas'>
         <div className='modal-volver'>
@@ -144,7 +321,7 @@ function Postulaciones() {
         <ModalBody>
           <div className='modal-contenido'>
             <div className='modal-titulo'>
-              <h1>{postulacionSeleccionada ? postulacionSeleccionada.titulo : ''}</h1>
+              <h1>{ofertaSeleccionada ? ofertaSeleccionada.titulo : ''}</h1>
               <div>
                 {[...Array(5)].map((star, i) => {
                   return (
@@ -152,16 +329,17 @@ function Postulaciones() {
                       key={i} 
                       size={40} 
                       onClick={() => cambioEstrellas(i)} 
-                      color={i < getPuntuacionEmpresa(postulacionSeleccionada?.id_empresa) ? "#024e69" : "grey"} 
+                      color={i < getPuntuacionEmpresa(ofertaSeleccionada?.id_empresa) ? "#024e69" : "grey"} 
                     />
                   )
                 })}
                 
               </div>
+              
             </div>
-            <span class="modal-titulo-linea"></span>
+            <span className="modal-titulo-linea"></span>
             <div className='modal-empresa'>
-              <h2>Para {postulacionSeleccionada ? getNombreEmpresa(postulacionSeleccionada?.id_empresa) : ''}</h2>
+              <h2>Para {ofertaSeleccionada ? <a href={`/empresas?id=${ofertaSeleccionada?.id_empresa}`}>{getNombreEmpresa(ofertaSeleccionada?.id_empresa)}</a> : ''}</h2>
               <div >
                 {[...Array(5)].map((star, i) => {
                   return (
@@ -169,14 +347,14 @@ function Postulaciones() {
                       key={i} 
                       size={25} 
                       onClick={() => cambioEstrellas(i)} 
-                      color={i < getPuntuacionEmpresa(postulacionSeleccionada?.id_empresa) ? "#024e69" : "grey"} 
+                      color={i < getPuntuacionEmpresa(ofertaSeleccionada?.id_empresa) ? "#024e69" : "grey"} 
                     />
                   )
                 })}
               </div>
             </div>
             <div className='modal-tags'>
-            {postulacionSeleccionada && postulacionSeleccionada.tags.split(',').map((tag, index) => (
+            {ofertaSeleccionada && ofertaSeleccionada?.tags?.split(',').map((tag, index) => (
               <div className='figura' key={index}>
                 <p>{tag}</p>
               </div>
@@ -184,53 +362,27 @@ function Postulaciones() {
             ))}
             </div>
             <div className='modal-descripcion'>
-              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
-                dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut 
-                est ex? Aliquid provident placeat architecto optio. Sint!
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel delectus beatae, ex quo error ipsum, 
-                corrupti pariatur tempore modi cumque officiis temporibus eveniet et! Culpa blanditiis rem in commodi harum?
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore, quia cumque aperiam ipsum ipsa tempore 
-                recusandae corporis hic aliquid deserunt commodi asperiores atque placeat! Quisquam dolores dolorum 
-                recusandae veniam tempore?
-              </p>
-              <br/>
-              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
-                dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut 
-                est ex? Aliquid provident placeat architecto optio. Sint!
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel delectus beatae, ex quo error ipsum, 
-                corrupti pariatur tempore modi cumque officiis temporibus eveniet et! Culpa blanditiis rem in commodi harum?
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore, quia cumque aperiam ipsum ipsa tempore 
-                recusandae corporis hic aliquid deserunt commodi asperiores atque placeat! Quisquam dolores dolorum 
-                recusandae veniam tempore?
-              </p>
-              <br/>
-              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
-                dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut.
-              
-                
+              <p>
+                {ofertaSeleccionada?.descripcion}
               </p>
             </div>
             
             <div className='modal-publicacion'>
               <div>
-                <p className='modal-publicacion-rem1'>Remuneración:{0 == postulacionSeleccionada?.remuneracion ? " No posee": " $"+postulacionSeleccionada?.remuneracion}</p>
-                <p className='modal-publicacion-rem'>Ubicación: { 0 == postulacionSeleccionada?.modalidad ? " Online":
-                                                                postulacionSeleccionada?.calle_numero + ", "} 
-                                                                {0 == postulacionSeleccionada?.modalidad ? "" : postulacionSeleccionada?.comuna + ", "}
-                                                                {0 == postulacionSeleccionada?.modalidad ? "" : "Región " + postulacionSeleccionada?.region} 
-                                                                {(0 == postulacionSeleccionada?.modalidad ? "": " (15km)")}</p>
-                <p className='modal-publicacion-ubi'>Horario: {postulacionSeleccionada?.horario}</p>
-                <p>{fechaFormateada}</p>                           
+                <p className='modal-publicacion-rem1'>Remuneración:{0 === ofertaSeleccionada?.remuneracion ? " No posee": " $"+ofertaSeleccionada?.remuneracion}</p>
+                <p className='modal-publicacion-rem'>Ubicación: { "Remoto" === ofertaSeleccionada?.modalidad ? " Online":
+                                                                ofertaSeleccionada?.calle_numero + ", "} 
+                                                                {"Remoto" === ofertaSeleccionada?.modalidad ? "" : ofertaSeleccionada?.comuna + ", "}
+                                                                {"Remoto" === ofertaSeleccionada?.modalidad ? "" : "Región " + ofertaSeleccionada?.region} 
+                                                                {("Remoto" === ofertaSeleccionada?.modalidad ? "": distancia ? " ("+distancia+")" : "")}</p>
+                <p className='modal-publicacion-ubi'>Horario: {ofertaSeleccionada?.horario}</p>
+                <p className='modal-fecha'>{fechaFormateada}</p>                           
               </div>
               
-              <div className='modal-publicacion-postulacion'>
+              <div className='modal-publicacion-oferta'>
 
-                <Button>{yaPostulo ? "Estas postulando✓" : "Postular a esta vacante"}</Button>
-                <div className='modal-publicacion-postulacion-anexos'>
-                  <BsThreeDots size={35} color="#074154" className='icon-postulacion'/>
-                  <FaHeart size={35} color="#074154" className='icon-postulacion'/>
-                  <BsShareFill size={35} color="#074154" className='icon-postulacion'/>
-                </div>
+                <Button onClick={postularOferta}>{yaPostulo ? "Estás postulando ✓" : "Postular a esta vacante"}</Button>
+                
               </div>
             </div>
           </div>

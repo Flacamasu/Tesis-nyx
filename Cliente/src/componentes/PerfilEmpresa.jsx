@@ -1,28 +1,222 @@
 import '../styles/PerfilEmpresa.css'
 import React, { useState,useEffect } from 'react';
+import { useUser } from './UserContext';
 import { AiFillStar } from 'react-icons/ai';
 import {Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Input, Label, Dropdown, DropdownItem, DropdownMenu, DropdownToggle} from 'reactstrap';
-import { BsShareFill, BsThreeDots } from "react-icons/bs";
-import { FaHeart } from "react-icons/fa";
+import { BiCommentAdd } from "react-icons/bi";
 import { useLocation } from 'react-router-dom';
+import swal from 'sweetalert';
 
 function PerfilEmpresa() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const idEmpresa = Number(queryParams.get('id'));
-  
+  const { user } = useUser();
+  const [ofertaSeleccionada, setOfertaSeleccionada] = useState(null);
+
   const [empresas, setEmpresas] = useState([]);
   const [postulaciones, setPostulaciones] = useState([]);
   const [departamentos, setDepartamentos] = useState([]);
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [estudiantes, setEstudiantes] = useState([]);
   const [abierto, setAbierto] = useState(false);
+  const [comentar, setComentar] = useState(false);
+  const [distancia, setDistancia] = useState(null);
+  const [yaPostulo, setYaPostulo] = useState(false);
+  const [comentario, setComentario] = useState("");
+  const tUsuario = localStorage.getItem('tUsuario');
 
+
+
+  const clickComentar = () => {
+    setComentar(!comentar);
+  }
+
+  const calcularDistancia = async (origen, destino) => {
+    const service = new window.google.maps.DistanceMatrixService();
+    
+    return new Promise((resolve, reject) => {
+      service.getDistanceMatrix(
+        {
+          origins: [origen],
+          destinations: [destino],
+          travelMode: 'DRIVING'
+        },
+        (response, status) => {
+          if (status !== "OK") {
+            reject("Error con el servicio de Google Maps");
+            return;
+          }
+          try{
+            const distancia = response.rows[0].elements[0].distance.text;
+            if (distancia) {
+              resolve(distancia);
+            } else {
+              reject("No se pudo obtener la distancia");
+            }
+          } catch{
+            
+          }
+          
+        }
+      );
+    });
+  };
+  const mostrarDistancia = async () => {
+    if (!user || !ofertaSeleccionada || tUsuario === 'empresa') {
+      console.error('User o ofertaSeleccionada no están definidos');
+      return;
+    }
+  
+    const direccionUsuario = user.calle_numero + ', ' + user.comuna + ', ' + user.region;
+    const otraDireccion = ofertaSeleccionada.calle_numero + ', ' + ofertaSeleccionada.comuna + ', ' + ofertaSeleccionada.region;
+  
+    if (!direccionUsuario || !otraDireccion) {
+      console.error('DireccionUsuario o otraDireccion no están definidos');
+      return;
+    }
+
+    try {
+      const resultado = await calcularDistancia(direccionUsuario, otraDireccion);
+      setDistancia(resultado);
+    } catch (error) {
+      console.error(error);
+      
+    }
+  };
+  useEffect(() => {
+    if (ofertaSeleccionada?.modalidad !== 'Remoto') {
+      mostrarDistancia();
+    }
+    comprobarPostulacion();
+  }, [user, ofertaSeleccionada]);
+
+  const postularOferta = async (e) => {
+    e.preventDefault();
+    try {
+      const checkResponse = await fetch(`http://localhost:5000/api/postulacion/check/${ofertaSeleccionada.id_oferta}/${user.id_estudiante}`);
+      const exists = await checkResponse.json();
+  
+      if (exists.alreadyApplied) {
+        const deleteResponse = await fetch(`http://localhost:5000/api/postulacion/delete/${ofertaSeleccionada.id_oferta}/${user.id_estudiante}`, {
+          method: 'DELETE',
+        });
+        if (deleteResponse.ok) {
+          swal({
+            title: "Dejaste de postular",
+            icon: "error",
+            className: "swal-custom-bg",
+            buttons: {
+              confirm: {
+                text: "Aceptar",
+                value: true,
+                visible: true,
+                className: "btn-aceptar",
+                closeModal: true
+              }
+            },
+          });
+          setYaPostulo(false);
+        }
+      } else if (tUsuario === 'empresa'){
+        return;
+      } else {
+        const datosOferta = {
+          id_oferta: ofertaSeleccionada.id_oferta,
+          id_estudiante: user.id_estudiante,
+          fecha: new Date()
+        };
+        const response = await fetch('http://localhost:5000/api/postulacion/agregar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(datosOferta),
+        });
+        swal({
+          title: "Has postulado",
+          icon: "success",
+          buttons: {
+            confirm: {
+              text: "Aceptar",
+              value: true,
+              visible: true,
+              className: "btn-aceptar",
+              closeModal: true
+            }
+          },
+          className: "swal-custom-bg"
+        });
+        setYaPostulo(true);
+      }
+    } catch (error) {
+      swal("Error al postular", "Para postular debes de iniciar sesión como estudiante", "warning");
+    }
+  }
+  const publicarComentario= async (e) => {
+    e.preventDefault();
+    try {
+      const checkResponse = await fetch(`http://localhost:5000/api/comentarios/check/${user.id_estudiante}`);
+      const exists = await checkResponse.json();
+  
+      if (!exists.alreadyApplied) {
+        const datosComentario = {
+          id_estudiante: user.id_estudiante,
+          rating: rating,
+          comentario: comentario,
+        };
+        const agregarResponse = await fetch('http://localhost:5000/api/comentarios/agregar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(datosComentario),
+        });
+        if (agregarResponse.ok) {
+          swal({
+            title: "¡Se publico el comentario!",
+            icon: "ok",
+            className: "swal-custom-bg",
+            buttons: {
+              confirm: {
+                text: "Aceptar",
+                value: true,
+                visible: true,
+                className: "btn-aceptar",
+                closeModal: true
+              }
+            },
+          });
+          setFeedbacks(false);
+        }
+      } else if (tUsuario === 'empresa'){
+        return;
+      } else {
+        swal({
+          title: "No puedes tener más de un comentario por empresa",
+          icon: "error",
+          className: "swal-custom-bg",
+          buttons: {
+            confirm: {
+              text: "Aceptar",
+              value: true,
+              visible: true,
+              className: "btn-aceptar",
+              closeModal: true
+            }
+          },
+        });
+      }
+    } catch (error) {
+      swal("Error", "Ocurrio un error al comentar", "warning");
+    }
+  }
   const clickOferta = (postulacion) => {
     setAbierto(!abierto);
-    if(abierto == false) setPostulacionSeleccionada(postulacion);
+    if(abierto == false) setOfertaSeleccionada(postulacion);
   }
-  const [postulacionSeleccionada, setPostulacionSeleccionada] = useState(null);
-
-  const fecha = new Date(postulacionSeleccionada?.fecha);
+ 
+  const fecha = new Date(ofertaSeleccionada?.fecha);
   const dia = fecha.getDate();
   const mes = fecha.getMonth();
   const ano = fecha.getFullYear();
@@ -77,6 +271,34 @@ function PerfilEmpresa() {
       .catch((error) => console.log(error));
   }, []); 
 
+  useEffect(() => {
+    fetch('http://localhost:5000/api/feedbacks')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error al cargar los datos");
+        }
+        return response.json();
+      })
+      .then((feedbacks) => {
+        setFeedbacks(feedbacks);
+
+      })
+      .catch((error) => console.log(error));
+  }, []); 
+  useEffect(() => {
+    fetch('http://localhost:5000/api/estudiantes')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error al cargar los datos");
+        }
+        return response.json();
+      })
+      .then((estudiantes) => {
+        setEstudiantes(estudiantes);
+
+      })
+      .catch((error) => console.log(error));
+  }, []); 
   const getEmpresaPorId = (id) => {
     const empresa = empresas.find((empresa) => empresa.id_empresa === id);
     return empresa;
@@ -90,15 +312,16 @@ function PerfilEmpresa() {
     return postulacion;
   };
   const empresa = getEmpresaPorId(idEmpresa);
-    console.log(empresa);
+   
 
   const departamento =  getDepartamentosPorEmpresa(idEmpresa);
-    console.log(departamento);
+   
   
   const postulacion =  getPostulaciones(idEmpresa);
-    console.log(postulacion);
+ 
 
   const binaryData = new Uint8Array(empresa?.logo.data);
+
   function uint8ArrayToBase64(array) {
     let binaryString = '';
     array.forEach((byte) => {
@@ -108,6 +331,9 @@ function PerfilEmpresa() {
 }
 const base64Image = uint8ArrayToBase64(binaryData);
 const imageUrl = "data:image/png;base64," + base64Image;
+
+
+
 const [departamentoActivo, setDepartamentoActivo] = useState(null);
 
 const toggleDepartamento = (nombreDepartamento) => {
@@ -116,16 +342,16 @@ const toggleDepartamento = (nombreDepartamento) => {
 const [puntuacionEmpresa, setPuntuacionEmpresa] = useState(0);
   const [nombreEmpresa, setNombreEmpresa] = useState('');
   useEffect(() => {
-    if (postulacionSeleccionada) {
+    if (ofertaSeleccionada) {
       const empresaEncontrada = empresas.find(
-        (empresa) => empresa.id_empresa === postulacionSeleccionada.id_empresa
+        (empresa) => empresa.id_empresa === ofertaSeleccionada.id_empresa
       );
       if (empresaEncontrada) {
         setPuntuacionEmpresa(empresaEncontrada.puntuacion_total);
         setNombreEmpresa(empresaEncontrada.nombre);
       }
     }
-  }, [postulacionSeleccionada, empresas]);
+  }, [ofertaSeleccionada, empresas]);
 
   const getPuntuacionEmpresa = (id_empresa) => {
     const empresaEncontrada = empresas.find(
@@ -141,6 +367,28 @@ const [puntuacionEmpresa, setPuntuacionEmpresa] = useState(0);
     );
     return empresaEncontrada ? empresaEncontrada.nombre : 0;
   };
+
+  const comprobarPostulacion = async () => {
+    
+    try {
+      // Comprobamos si el usuario ya se postuló a la oferta
+      const checkResponse = await fetch(`http://localhost:5000/api/postulacion/check/${ofertaSeleccionada.id_oferta}/${user.id_estudiante}`);
+      const exists = await checkResponse.json();
+      console.log(exists);
+      if (exists.alreadyApplied) {
+        setYaPostulo(true);
+        console.log("hola")
+      } else if (tUsuario === 'empresa'){
+        return;
+      } else {
+        setYaPostulo(false);
+
+      }
+    } catch (error) {
+      console.log("mal");
+    }
+  }
+
   return(
     <div className='empresa-todo'>
       <div className="empresa-barra">
@@ -188,7 +436,7 @@ const [puntuacionEmpresa, setPuntuacionEmpresa] = useState(0);
             {departamentoActivo === departamento.nombre && (
               <div className="ofertas">               
                 {postulaciones
-                  .filter((postulacion) => postulacion.departamento === departamento.nombre)
+                  .filter((postulacion) => postulacion.departamento === departamento.nombre & postulacion.id_empresa === idEmpresa)
                   .map((postulacionFiltrada, i) => (
                     <p className='empresa-ofertas-departamento-oferta' key={i} onClick={() => clickOferta(postulacionFiltrada)}>
                       {postulacionFiltrada.titulo} 
@@ -200,108 +448,204 @@ const [puntuacionEmpresa, setPuntuacionEmpresa] = useState(0);
           </div>
         ))}        
       </div>
-      <Modal isOpen={abierto} className='modal-practicas'>
-
-<div className='modal-volver'>
-  <Button onClick={clickOferta}>Volver</Button>
-  <img src={require(`../imagenes/nyxbich2.png`)} alt='' className='img-bichnx'></img>
-</div>
-<ModalBody>
-  <div className='modal-contenido'>
-    <div className='modal-titulo'>
-      <h1>{postulacionSeleccionada ? postulacionSeleccionada.titulo : ''}</h1>
-      <div>
-        {[...Array(5)].map((star, i) => {
-          return (
-            <AiFillStar 
-              key={i} 
-              size={40} 
-              onClick={() => cambioEstrellas(i)} 
-              color={i < getPuntuacionEmpresa(postulacionSeleccionada?.id_empresa) ? "#024e69" : "grey"} 
-            />
-          )
-        })}
-        
-      </div>
-    </div>
-    <span class="modal-titulo-linea"></span>
-    <div className='modal-empresa'>
-      <h2>Para {postulacionSeleccionada ? getNombreEmpresa(postulacionSeleccionada?.id_empresa) : ''}</h2>
-      <div >
-        {[...Array(5)].map((star, i) => {
-          return (
-            <AiFillStar 
-              key={i} 
-              size={25} 
-              onClick={() => cambioEstrellas(i)} 
-              color={i < getPuntuacionEmpresa(postulacionSeleccionada?.id_empresa) ? "#024e69" : "grey"} 
-            />
-          )
-        })}
-      </div>
-    </div>
-    <div className='modal-tags'>
-    {postulacionSeleccionada && postulacionSeleccionada.tags.split(',').map((tag, index) => (
-      <div className='figura' key={index}>
-        <p>{tag}</p>
-      </div>
-      
-    ))}
-    </div>
-    <div className='modal-descripcion'>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
-        dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut 
-        est ex? Aliquid provident placeat architecto optio. Sint!
-        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel delectus beatae, ex quo error ipsum, 
-        corrupti pariatur tempore modi cumque officiis temporibus eveniet et! Culpa blanditiis rem in commodi harum?
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore, quia cumque aperiam ipsum ipsa tempore 
-        recusandae corporis hic aliquid deserunt commodi asperiores atque placeat! Quisquam dolores dolorum 
-        recusandae veniam tempore?
-      </p>
-      <br/>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
-        dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut 
-        est ex? Aliquid provident placeat architecto optio. Sint!
-        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Vel delectus beatae, ex quo error ipsum, 
-        corrupti pariatur tempore modi cumque officiis temporibus eveniet et! Culpa blanditiis rem in commodi harum?
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore, quia cumque aperiam ipsum ipsa tempore 
-        recusandae corporis hic aliquid deserunt commodi asperiores atque placeat! Quisquam dolores dolorum 
-        recusandae veniam tempore?
-      </p>
-      <br/>
-      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore aspernatur, 
-        dolorum dicta libero praesentium modi quidem dolorem quas soluta vel excepturi ut.
-      
-        
-      </p>
-    </div>
-    
-    <div className='modal-publicacion'>
-      <div>
-        <p className='modal-publicacion-rem1'>Remuneración:{0 == postulacionSeleccionada?.remuneracion ? " No posee": " $"+postulacionSeleccionada?.remuneracion}</p>
-        <p className='modal-publicacion-rem'>Ubicación: { 0 == postulacionSeleccionada?.modalidad ? " Online":
-                                                        postulacionSeleccionada?.calle_numero + ", "} 
-                                                        {0 == postulacionSeleccionada?.modalidad ? "" : postulacionSeleccionada?.comuna + ", "}
-                                                        {0 == postulacionSeleccionada?.modalidad ? "" : "Región " + postulacionSeleccionada?.region} 
-                                                        {(0 == postulacionSeleccionada?.modalidad ? "": " (15km)")}</p>
-        <p className='modal-publicacion-ubi'>Horario: {postulacionSeleccionada?.horario}</p>
-        <p>{fechaFormateada}</p>                           
-      </div>
-      
-      <div className='modal-publicacion-postulacion'>
-
-        <Button>Postular a esta vacante</Button>
-        <div className='modal-publicacion-postulacion-anexos'>
-          <BsThreeDots size={35} color="#074154" className='icon-postulacion'/>
-          <FaHeart size={35} color="#074154" className='icon-postulacion'/>
-          <BsShareFill size={35} color="#074154" className='icon-postulacion'/>
+      <div className='empresa-comentarios'>
+        <div className='empresa-comentarios-inicio'>
+          <h1 className='empresa-comentarios-titulo'>Comentarios</h1>
+          <p className='empresa-comentarios-titulo-agregar'>
+            {tUsuario === "estudiante" ? 
+            <BiCommentAdd onClick={clickComentar}/> : ""}
+          </p>
+          
         </div>
+        {comentar &&
+            <div className='empresa-comen'>
+              <div className='empresa-comentar'>
+                {estudiantes
+                  .filter(estudiante => estudiante.id_estudiante === user?.id_estudiante)
+                  .map((estudianteFiltrado, i) => {
+                    // Encuentra el estudiante asociado con el feedback
+                    
+                    // Convierte los datos del logo a base64
+                    const logoBase64 = estudianteFiltrado && estudianteFiltrado.imagen && estudianteFiltrado.imagen.data 
+                                      ? uint8ArrayToBase64(new Uint8Array(estudianteFiltrado.imagen.data)) 
+                                      : null;
+                    
+                    return (
+                      <div className='empresa-comentarios-contenido'>
+                        <div className='empresa-comentarios-contenido-p1 empresa-comentarios-contenido-informacion--width empresa-comentarios-contenido-informacion--foto'>
+                        <img 
+                          src={ logoBase64 && logoBase64.length > 100 ? `data:image/png;base64,${logoBase64}` : require(`../imagenes/usuario-404.png`)} 
+                          alt="" 
+                          className='empresa-comentarios-contenido-imagen-comentarios'
+                        />
+                          <div className='empresa-comentarios-contenido-informacion empresa-comentarios-contenido-informacion--width '>
+                            <h2 className='empresa-comentarios-contenido-informacion-nombre'>
+                              {estudianteFiltrado.nombre}
+                            </h2>
+                            <textarea 
+                              type="text" 
+                              className='empresa-comentar-comentario' 
+                              placeholder = 'Escribe tu comentario aquí...' 
+                              onChange={(e) => setComentario(e.target.value)} 
+                              value={comentario}
+                            />
+                           
+                          </div>
+                        </div>
+                        <div className='empresa-comentar-publicar'>
+                          <p className='empresa-comentarios-contenido-estrellas comentar-estrellas'>
+                            {[...Array(5)].map((star, i) => {
+                              return (
+                                <AiFillStar 
+                                  key={i} 
+                                  size={35} 
+                                  onClick={() => cambioEstrellas(i)} 
+                                  color={i < rating ? "#024e69" : "grey"} 
+                                />
+                              )
+                            })}
+                          </p>
+                          <div >
+                            <button 
+                              className='empresa-comentar-publicar-boton'
+                              onClick={publicarComentario}
+                            >
+                                Publicar
+                            </button>
+                          </div>
+                        </div>
+                        
+                        </div>
+                    );
+                  })
+                }
+              </div>
+              
+            </div>
+          }
+          {feedbacks
+            .filter(feedback => feedback.id_empresa === idEmpresa)
+            .map((feedbackFiltrado, i) => {
+              // Encuentra el estudiante asociado con el feedback
+              const estudiante = estudiantes.find(est => est.id_estudiante === feedbackFiltrado.id_estudiante);
+
+              // Convierte los datos del logo a base64
+              const logoBase64 = estudiante && estudiante.imagen && estudiante.imagen.data 
+                                ? uint8ArrayToBase64(new Uint8Array(estudiante.imagen.data)) 
+                                : null;
+         
+              return (
+                <div className='empresa-comentarios-contenido'>
+                  <div className='empresa-comentarios-contenido-p1'>
+                  <img 
+                    src={ logoBase64 && logoBase64.length > 100 ? `data:image/png;base64,${logoBase64}` : require(`../imagenes/usuario-404.png`)} 
+                    alt="" 
+                    className='empresa-comentarios-contenido-imagen'
+                  />
+                    <div className='empresa-comentarios-contenido-informacion'>
+                      <h2 className='empresa-comentarios-contenido-informacion-nombre'>
+                        {estudiantes.
+                          find(estudiante => estudiante.id_estudiante === feedbackFiltrado.id_estudiante)
+                          ?.nombre
+                          
+                        }
+                      </h2>
+                      <p className='empresa-comentarios-contenido-informacion-descripcion'>{feedbackFiltrado.descripcion}</p>
+                    </div>
+                  </div>
+                  <p className='empresa-comentarios-contenido-estrellas'>
+                    {[...Array(5)].map((star, i) => {
+                      return (
+                        <AiFillStar 
+                          key={i} 
+                          size={25} 
+                          onClick={() => cambioEstrellas(i)} 
+                          color={i < feedbackFiltrado.puntaje ? "#024e69" : "grey"} 
+                        />
+                      )
+                    })}
+                  </p>
+                  </div>
+              );
+            })
+          }
       </div>
-    </div>
-  </div>
-  
-</ModalBody>
-</Modal>
+      <Modal isOpen={abierto} className='modal-practicas'>
+        <div className='modal-volver'>
+          <Button onClick={clickOferta}>Volver</Button>
+          <img src={require(`../imagenes/nyxbich2.png`)} alt='' className='img-bichnx'></img>
+        </div>
+        <ModalBody>
+          <div className='modal-contenido'>
+            <div className='modal-titulo'>
+              <h1>{ofertaSeleccionada ? ofertaSeleccionada.titulo : ''}</h1>
+              <div>
+                {[...Array(5)].map((star, i) => {
+                  return (
+                    <AiFillStar 
+                      key={i} 
+                      size={40} 
+                      onClick={() => cambioEstrellas(i)} 
+                      color={i < getPuntuacionEmpresa(ofertaSeleccionada?.id_empresa) ? "#024e69" : "grey"} 
+                    />
+                  )
+                })}
+                
+              </div>
+              
+            </div>
+            <span className="modal-titulo-linea"></span>
+            <div className='modal-empresa'>
+              <h2>Para {ofertaSeleccionada ? <a href={`/empresas?id=${ofertaSeleccionada?.id_empresa}`}>{getNombreEmpresa(ofertaSeleccionada?.id_empresa)}</a> : ''}</h2>
+              <div >
+                {[...Array(5)].map((star, i) => {
+                  return (
+                    <AiFillStar 
+                      key={i} 
+                      size={40} 
+                      onClick={() => cambioEstrellas(i)} 
+                      color={i < getPuntuacionEmpresa(ofertaSeleccionada?.id_empresa) ? "#024e69" : "grey"} 
+                    />
+                  )
+                })}
+              </div>
+            </div>
+            <div className='modal-tags'>
+            {ofertaSeleccionada && ofertaSeleccionada.tags.split(',').map((tag, index) => (
+              <div className='figura' key={index}>
+                <p>{tag}</p>
+              </div>
+              
+            ))}
+            </div>
+            <div className='modal-descripcion'>
+              <p>
+                {ofertaSeleccionada?.descripcion}
+              </p>
+            </div>
+            
+            <div className='modal-publicacion'>
+              <div>
+                <p className='modal-publicacion-rem1'>Remuneración:{0 === ofertaSeleccionada?.remuneracion ? " No posee": " $"+ofertaSeleccionada?.remuneracion}</p>
+                <p className='modal-publicacion-rem'>Ubicación: { "Remoto" === ofertaSeleccionada?.modalidad ? " Online":
+                                                                ofertaSeleccionada?.calle_numero + ", "} 
+                                                                {"Remoto" === ofertaSeleccionada?.modalidad ? "" : ofertaSeleccionada?.comuna + ", "}
+                                                                {"Remoto" === ofertaSeleccionada?.modalidad ? "" : "Región " + ofertaSeleccionada?.region} 
+                                                                {("Remoto" === ofertaSeleccionada?.modalidad ? "": distancia ? " ("+distancia+")" : "")}</p>
+                <p className='modal-publicacion-ubi'>Horario: {ofertaSeleccionada?.horario}</p>
+                <p className='modal-fecha'>{fechaFormateada}</p>                           
+              </div>
+              
+              <div className='modal-publicacion-oferta'>
+
+                <Button onClick={postularOferta}> {yaPostulo ? "Estás postulando ✓" : "Postular a esta vacante"}</Button>
+                
+              </div>
+            </div>
+          </div>
+          
+        </ModalBody>
+        </Modal>
     </div>
    
   );

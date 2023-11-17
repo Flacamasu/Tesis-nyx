@@ -5,7 +5,7 @@ import { useUser } from './UserContext';
 function EstudiantesMod() {
   const { user } = useUser();
   const { setUser } = useUser();
-  const [genero, setGenero] = useState([]);
+  const [genero, setGenero] = useState('');
   const [nombre, setNombre] = useState('');
   const [usuario, setUsuario] = useState('');
   const [contraseña, setContraseña] = useState('');
@@ -98,27 +98,12 @@ function EstudiantesMod() {
           <p className='form-usuario-abajo'>Nombre</p>
           <input
             type="number"
-            
+            placeholder={user?.telefono}
             className="form-usuario"
-            
+            value={telefono}
+            onChange={(e) => setTelefono(e.target.value)}
           />
           <p className='form-usuario-abajo'>Número de telefono</p>
-          <input
-            type="text"
-            placeholder={user?.descripcion}
-            className="form-usuario"
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
-          />
-          <p className='form-usuario-abajo'>Descripción</p>
-          <input
-            type="text"
-            placeholder={user?.direccion}
-            className="form-usuario"
-            value={direccion}
-            onChange={(e) => setDireccion(e.target.value)}
-          />
-          <p className='form-usuario-abajo'>Dirección</p>
           <input
             type="text"
             placeholder={user?.correo}
@@ -127,7 +112,106 @@ function EstudiantesMod() {
             onChange={(e) => setCorreo(e.target.value)}
           />
           <p className='form-usuario-abajo'>Correo</p>
-          
+          <input
+            type="text"
+            placeholder={user?.carrera}
+            className="form-usuario"
+            value={carrera}
+            onChange={(e) => setCarrera(e.target.value)}
+          />
+          <p className='form-usuario-abajo'>Carrera</p>
+          <input
+            type="text"
+            placeholder={user?.especialidad}
+            className="form-usuario"
+            value={especialidad}
+            onChange={(e) => setEspecialidad(e.target.value)}
+          />
+          <p className='form-usuario-abajo'>Especialidad</p>
+          <textarea
+            placeholder={user?.descripcion}
+            className="form-usuario form-textarea"
+            onChange={(e) => setDescripcion(e.target.value)}
+            value={descripcion}
+          />
+          <p className='form-usuario-abajo'>Descripción</p>
+          <input
+            type="text"
+            placeholder={user?.genero}
+            className="form-usuario"
+            value={genero}
+            onChange={(e) => setGenero(e.target.value)}
+          />
+          <p className='form-usuario-abajo'>Genero</p>
+          <input
+            type="number"
+            placeholder={user?.edad}
+            className="form-usuario"
+            value={edad}
+            onChange={(e) => setEdad(e.target.value)}
+          />
+          <p className='form-usuario-abajo'>Edad</p>
+          <textarea
+            placeholder={user?.intereses}
+            className="form-usuario form-textarea"
+            onChange={(e) => setIntereses(e.target.value)}
+            value={intereses}
+          />
+          <p className='form-usuario-abajo'>Intereses</p>
+          <textarea
+            placeholder={user?.proyectos}
+            className="form-usuario form-textarea"
+            onChange={(e) => setProyectos(e.target.value)}
+            value={proyectos}
+          />
+          <p className='form-usuario-abajo'>Proyectos</p>
+          <textarea
+            placeholder={user?.habilidades}
+            className="form-usuario form-textarea"
+            onChange={(e) => setHabilidades(e.target.value)}
+            value={habilidades}
+          />
+          <p className='form-usuario-abajo'>Habilidades</p>
+          <textarea
+            placeholder={user?.conocimientos}
+            className="form-usuario form-textarea"
+            onChange={(e) => setconocimientos(e.target.value)}
+            value={conocimientos}
+          />
+          <p className='form-usuario-abajo'>Conocimientos</p>
+          <input
+            type="text"
+            placeholder={user?.estudios}
+            className="form-usuario"
+            value={estudios}
+            onChange={(e) => setEstudios(e.target.value)}
+          />
+          <p className='form-usuario-abajo'>Estudios</p>
+          <input
+            type="text"
+            placeholder={user?.calle_numero}
+            className="form-usuario"
+            value={calleNumero}
+            onChange={(e) => setCalleNumero(e.target.value)}
+          />
+          <p className='form-usuario-abajo'>Calle y número</p>
+          <input
+            type="text"
+            placeholder={user?.region}
+            className="form-usuario"
+            value={region}
+            onChange={(e) => setRegion(e.target.value)}
+          />
+          <p className='form-usuario-abajo'>Región</p>
+          <input
+            type="text"
+            placeholder={user?.comuna}
+            className="form-usuario"
+            value={comuna}
+            onChange={(e) => setComuna(e.target.value)}
+          />
+          <p className='form-usuario-abajo'>Comuna</p>
+
           <div className='form-usuario-abajo-abajo'>
             <button type="submit" className="form-boton">
               Confirmar

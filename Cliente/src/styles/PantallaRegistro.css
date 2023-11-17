@@ -65,8 +65,12 @@
   color: #003b4e;
   margin-top: 15px;
   border: none;
+  cursor: pointer;
 }
-
+.form-boton:hover{
+  background-color: #21a869;
+  transition: 0.3s;
+}
 .form-usuario-abajo-abajo{
   display: flex;
   flex-direction: column;
@@ -74,7 +78,9 @@
   align-items: center;
   height: 100%;
 }
-
+.form-textarea-empresa{
+  padding: 10px;
+}
 .form-usuario-abajo-cosas{
   margin-top: 20px;
   margin-bottom: 10px;
@@ -82,4 +88,36 @@
 
 .form-usuario--desaparecer{
   display: none;
+}
+.sesion-eleccion{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+}
+.boton-seleccion{
+  width: 200px;
+  height: 30px;
+  margin: 10px;
+  font-size: 1.1em;
+  font-family: 'Play', sans-serif;
+  background-color: #2dc880;
+  color: #003b4e;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+.boton-seleccionado{
+  background-color: #1c8855;
+  transition: 0.3s;
+  
+}
+
+.boton-no-seleccionado {
+  background-color: #2dc880; /* Color de fondo cuando el botón no está seleccionado */
+  transition: 0.3s;
+}
+.boton-no-seleccionado:hover{
+  background-color: #21a869;
+  transition: 0.3s;
 }

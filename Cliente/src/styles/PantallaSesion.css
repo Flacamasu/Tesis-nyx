@@ -58,7 +58,7 @@
 .form-boton1{
   background-color: #2dc880;
   height: 43px;
-  
+  cursor: pointer;
   font-size: 1.6em;
   font-family: 'Play', sans-serif;
   font-weight: 600;
@@ -85,6 +85,8 @@
 }
 .sesion-elecciones{
   width: 100%;
+  display: flex;
+  justify-content: center;
 }
 .sesion-eleccion{
   width: 50%;

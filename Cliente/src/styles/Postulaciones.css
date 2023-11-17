@@ -13,4 +13,11 @@
 .postulaciones-ofertas{
   width: 900px;
   font-size: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+.empresa-ofertas-departamento-oferta-derecha{
+  margin-right: 50px;
 }

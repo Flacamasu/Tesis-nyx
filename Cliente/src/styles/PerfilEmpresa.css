@@ -47,6 +47,7 @@
   justify-content: space-evenly;
   height: 100%;
   width: 100%;
+  overflow: auto;
 }
 .empresa-barra-info-direcciones p{
   font-size: 1.3em;
@@ -109,83 +110,7 @@
   background-color: #bcd3a7;
   transition: 0.15s;
 }
-.modal-practicas{
-  background-color: rgba(24, 24, 24, 0.85);
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-}
-.modal-contenido{
-  display: flex;
-  flex-direction: column;
-  background-color: #d1e5c0;
-  width: 1196px;
-  height: 555px;
-}
-.modal-volver{
-  display: flex;
-  justify-content: space-between;
-  color: #d1e5c0;
-  position: relative;
-}
-.modal-volver button{
-  background-color: transparent;
-  color: #d1e5c0;
-  border: none;
-  margin-bottom: 5px;
-  font-size: 1.5em;
-  font-family:'Play';
-}
-.modal-volver button:hover {
-  cursor: pointer;
-}
-.img-bichnx{
-  width: 150px;
-  position: absolute;
-  right: 0;
-  margin-top: -79.4px;
-  top: 0;
-}
-.modal-titulo{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.modal-titulo h1, .modal-titulo p{
-  margin: 5px;
-  color:#074154;
-  font-size: 3em;
-  font-weight: 700;
-  margin-left: 20px;
-}
-.modal-titulo div{
-  margin-right: 20px;
-}
-.modal-titulo-linea{
-  border-bottom: 4px solid #000;
-  width: 50%;
-  margin-left: 12px;
-}
-.modal-empresa{
-  display: flex;
-  align-items: center;
-}
-.modal-empresa h2, .modal-empresa p{
-  margin: 5px;
-  margin-left: 20px;
-  color: #074154;
-}
-.modal-tags{
-  display: flex;
-  margin-left: 25px;
-  margin-top: 10px;
-}
+
 .figura {
   display: flex;
   background-color: #166a85;
@@ -202,50 +127,112 @@
   padding-top: 2px;
   margin: 0 10px;
 }
-.modal-publicacion{
-  display: flex;
-  align-items: last baseline;
-  justify-content: space-between;
-  margin-left: 35px;
-  height: 100%;
-  margin-bottom: 20px;
-}
-.modal-publicacion-postulacion{
-  display: flex;
-  align-items: center;
- 
-}
-.modal-publicacion-postulacion Button{
-  background-color: #2dc880;
-  border: none;
-  padding: 10px;
-  color: #dceed4;
-  font-size: 2em;
-  font-family: 'Play';
-  font-weight: 600;
-}
-.modal-descripcion{
-  margin-left: 30px;
-  margin-right: 300px;
-  margin-top: 20px;
-}
-.modal-descripcion p{
-  color: #1d93b9;
-  font-size: 1.2em;
-  font-family: 'Prompt', sans-serif;
-  font-weight: 100;
-  
-}
-.modal-publicacion p{
-  color:#074154; 
-  font-size: 1.3em;
-}
-.modal-publicacion-postulacion-anexos{
-  display: flex;
-  flex-direction: column;
-  margin: 0 20px;
-  text-align: center;
-}
+
+
 .icon-postulacion{
   margin-bottom: 7px;
+}
+.empresa-comentarios-contenido{
+  width: 100%;
+  background-color: #efffe1;
+  display: flex;
+  border-bottom: 1px solid #075269;
+  padding: 8px;
+  padding-bottom: 20px;
+  justify-content: space-between;
+}
+.empresa-comentarios-contenido-p1{
+  display: flex;
+}
+.empresa-comentarios-inicio{
+  display: flex;
+  align-items: center;
+}
+.empresa-comentarios-titulo-agregar{
+  margin-left: 20px;
+  font-size: 2em;
+  cursor: pointer;
+}
+.empresa-comentarios-contenido-imagen{
+  height: 100px;
+  width: 100px;
+  align-self: center;
+  margin-right: 10px;
+  margin-left: 5px;
+}
+.empresa-comentarios-contenido-informacion-nombre{
+  margin:0;
+  font-size: 1.7em;
+}
+.empresa-comentarios-contenido-informacion-descripcion{
+  font-size: 1.2em;
+  margin-left: 15px;
+}
+.empresa-comentarios-contenido-estrellas{
+  white-space: nowrap;
+}
+.empresa-comen{
+  display: flex;
+  flex-direction: column;
+}
+.empresa-comentar{
+  margin-bottom: 10px;
+}
+.comentar-estrellas{
+  cursor: pointer;
+}
+
+.empresa-comentarios-contenido-informacion--width{
+  width: 100%;
+}
+.empresa-comentarios-contenido-informacion--foto{
+  justify-content: start;
+  align-items: start;
+  align-self: inherit;
+}
+.empresa-barra-info-puntuacion-comentario{
+  cursor: pointer;
+}
+.empresa-comentar-comentario{
+  margin-top: 7px;
+  width: 99%;
+  resize: none;
+  outline: none;
+  height:200px;
+  font-size: 1.2em;
+  color: #003b4e;
+  padding: 3px;
+  border: 1px solid  #cccccc;
+  font-family: 'Play', sans-serif;
+  overflow: scroll;
+}
+.empresa-comentar-publicar{
+  display: flex;
+
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: end;
+}
+.empresa-comentar-publicar-boton{
+  background-color: #53cbbe;
+  cursor: pointer;
+  border: none;
+  padding: 5px 25px;
+  font-size: 1.5em;
+  font-weight: bold;
+  font-family: 'Prompt', sans-serif;
+  color: #003b4e;
+  margin-top: 50px;
+  margin-right: 10px;
+}
+.empresa-comentar-publicar-boton:hover{
+  background-color: #42a198;
+  transition: 0.2s;
+}
+.empresa-comentarios-contenido-imagen-comentarios{
+  height: 100px;
+  width: 100px;
+ 
+  margin-right: 10px;
+  margin-left: 5px;
 }

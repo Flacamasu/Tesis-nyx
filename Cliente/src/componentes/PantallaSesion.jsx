@@ -10,13 +10,16 @@ function PantallaSesion() {
   const [contraseña, setContraseña] = useState('');
   const [isEmpresa, setIsEmpresa] = useState(true);
   const [errorMensaje, setErrorMensaje] = useState(null);
+  const [selectedButton, setSelectedButton] = useState('empresa');
 
   const handleEmpresaClick = () => {
     setIsEmpresa(true);
+    setSelectedButton('empresa');
   };
 
   const handleEstudianteClick = () => {
     setIsEmpresa(false);
+    setSelectedButton('estudiante');
   };
   useEffect(() => {
     fetch('http://localhost:5000/api/empresas')
@@ -51,7 +54,10 @@ function PantallaSesion() {
         localStorage.setItem('tUsuario', data.tUsuario);
         setUser(data.usuario);
         console.log("Data recibida:", data);
-        swal("Bienvenido!", "Has iniciado sesión correctamente", "success");
+        swal("Bienvenido!", "Has iniciado sesión correctamente", "success")
+        .then(() => {
+          window.location.href = 'http://localhost:3000'; // Reemplaza con la URL a la que deseas redirigir al usuario
+        });
       } else {
         console.log("Usuario invalido")
         swal("Error!", "Usuario o contraseña incorrectos", "error");
@@ -73,38 +79,75 @@ function PantallaSesion() {
         localStorage.setItem('tUsuario', data.tUsuario);
         setUser(data.usuario);
         console.log("Data recibida:", data);
-        swal("Bienvenido!", "Has iniciado sesión correctamente", "success");
+        swal("Bienvenido!", "Has iniciado sesión correctamente", "success")
+          .then(() => {
+            window.location.href = 'http://localhost:3000'; // Reemplaza con la URL a la que deseas redirigir al usuario
+          });
       } else {
         console.log("Usuario invalido")
         swal("Error!", "Usuario o contraseña incorrectos", "error");
       }
     }
     // Aquí puedes hacer una solicitud HTTP para autenticar al usuario.
-    
-
   
 
   };
+  function formatUsuario(value) {
+    // Verificar si el último carácter es una 'k' o 'K'
+    let endsWithK = value.toLowerCase().endsWith('k');
 
+    // Si el valor termina con 'k' o 'K', eliminar este carácter
+    let cleanedValue = endsWithK ? value.slice(0, -1) : value;
+
+    // Limpiar el valor de entrada de cualquier caracter no numérico
+ 
+    cleanedValue = cleanedValue.replace(/\D+/g, '');
+    
+    if (endsWithK){
+      cleanedValue = cleanedValue+'K'
+    } 
+
+    // Si la longitud del valor limpio es 1 o 2, simplemente devolver el valor limpio
+    if (cleanedValue.length <= 2) {
+      return cleanedValue + (endsWithK ? '-K' : '');
+    }
+
+    // Separar el último dígito para el guion
+    let lastDigit = cleanedValue.slice(-1);
+    let restOfDigits = cleanedValue.slice(0, -1);
+
+    // Formatear el resto de los dígitos con puntos
+    let formattedRest = restOfDigits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+    // Combinar el formato
+    let formattedValue = `${formattedRest}-${lastDigit}`;
+
+    return formattedValue;
+  }
+
+  const handleChange = (event) => {
+    let inputValue = event.target.value;
+    setUsuario(formatUsuario(inputValue));
+  };
   return (
     <div className="sesion-todo">
       <div className="sesion-contenedor">
         <div className='sesion-elecciones'>
-          <button className='sesion-eleccion' onClick={handleEmpresaClick}>Empresa</button>
-          <button className='sesion-eleccion' onClick={handleEstudianteClick}>Estudiante</button>
+        <button onClick={handleEmpresaClick} className={selectedButton === 'empresa' ? 'boton-seleccionado boton-seleccion' : 'boton-no-seleccionado boton-seleccion'}>Empresa</button>
+          <button onClick={handleEstudianteClick} className={selectedButton === 'estudiante' ? 'boton-seleccionado boton-seleccion' : 'boton-no-seleccionado boton-seleccion'}>Estudiante</button>
         </div>
         
         <p className='sesion-titulo1'>Iniciar Sesión</p>
         <img src={require(`../imagenes/nyxbich3.png`)} alt='' className='sesion-imagen1'></img>
         <form onSubmit={handleSubmit} className="form">
           <input
-            type="number"
+            type="text"
             placeholder="Usuario"
             className="form-usuario"
             value={usuario}
-            onChange={(e) => setUsuario(e.target.value)}
+            onChange={handleChange}
           />
-          <p className='form-usuario-abajo'>Correo electronico</p>
+          <p className='form-usuario-abajo'>Rut</p>
           <input
             type="password"
             placeholder="Contraseña"

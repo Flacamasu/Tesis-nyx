@@ -19,17 +19,7 @@ function FormularioInicio({data}) {
   const cambioEstrellas = (index) => {
     setRating(index + 1);
   };
-  /*<select className='barra-input barra-input-' defaultValue='pagaTrue'>
-          <option value="pagaFalse">Todas</option>
-          <option value="pagaTrue">Pagada</option>
-        </select>
-        <select className='barra-input' defaultValue={"pagaFalse"}>
-          <option value="pagaFalse">5</option>
-          <option value="pagaTrue">4</option>
-          <option value="pagaTrue">3</option>
-          <option value="pagaTrue">2</option>
-          <option value="pagaTrue">1</option>
-        </select>*/ 
+  
   return(
     <div className='busqueda-contenedor-barra'>
       <div className='busqueda-barra'>
@@ -41,17 +31,8 @@ function FormularioInicio({data}) {
           value={practica}
           onChange={(e) => setPractica(e.target.value)}               
         />
-        <input
-          className='barra-input barra-input-ubicacion'
-          type='text'
-          placeholder='Ubicación'
-          value={locacion}
-          onChange={(e) => setLocacion(e.target.value)}
-        />
-        <select className='barra-input barra-input-' defaultValue='pagaTrue'>
-          <option value="pagaFalse">Todas</option>
-          <option value="pagaTrue">Pagada</option>
-        </select>
+
+      
         <select 
           className='barra-input' 
           name="rating"
