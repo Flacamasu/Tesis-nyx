@@ -1,0 +1,7 @@
+.departamentos-todo{
+  display: flex;
+  flex-direction: column;
+}
+.titulo-departamentos{
+  margin-top: 0;
+}

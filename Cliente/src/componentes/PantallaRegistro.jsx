@@ -2,6 +2,7 @@ import '../styles/PantallaRegistro.css';
 import React, { useState, useEffect } from 'react';
 import { useUser } from './UserContext';
 import swal from 'sweetalert';
+import validator from "validator";
 
 function PantallaRegistro() {
   const { setUser } = useUser();
@@ -54,11 +55,37 @@ function PantallaRegistro() {
       .catch((error) => console.log(error));
   }, []);
 
+  const validarEmail = (email) => {
+    const re = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i; // Expresión regular básica
+    return re.test(email.toLowerCase());
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault(); 
     try {
     const formData = new FormData();
     if (isEmpresa) {
+
+    
+        if (!validator.isEmail(correo)) {
+          swal({
+            title: "¡Error al registrar!",
+            text: "El correo ingresado no es válido",
+            icon: "error",
+            buttons: {
+              confirm: {
+                text: "Aceptar",
+                value: true,
+                visible: true,
+                className: "btn-aceptar",
+                closeModal: true
+              }
+            },
+            className: "swal-custom-bg"
+          });
+          return;
+        }
+   
       formData.append('nombre', nombre);
       formData.append('usuario', usuario);
       formData.append('contrasena', contrasena);
@@ -79,6 +106,7 @@ function PantallaRegistro() {
         }
         swal({
           title: "¡Te has registrado con exito!",
+          text: "El correo ingresado no es válido",
           icon: "success",
           buttons: {
             confirm: {
@@ -90,8 +118,29 @@ function PantallaRegistro() {
             }
           },
           className: "swal-custom-bg"
+        })
+        .then(() => {
+          window.location.href = 'http://localhost:3000/sesion'; // Reemplaza con la URL a la que deseas redirigir al usuario
         });
       } else {
+        if (!validator.isEmail(correo)) {
+          swal({
+            title: "¡Error al registrar!",
+            text: "El correo ingresado no es válido",
+            icon: "error",
+            buttons: {
+              confirm: {
+                text: "Aceptar",
+                value: true,
+                visible: true,
+                className: "btn-aceptar",
+                closeModal: true
+              }
+            },
+            className: "swal-custom-bg"
+          });
+          return;
+        }
         const formData2 = new FormData();
         
           formData2.append('usuario', usuario);
@@ -114,7 +163,7 @@ function PantallaRegistro() {
           formData2.append('region', region);
           formData2.append('comuna', comuna);
           
-          const response = await fetch('http://localhost:5000/api/estudianteRegistrop', {
+          const response = await fetch('http://localhost:5000/api/estudianteRegistro', {
             method: 'POST',
             body: formData2,  // Modificado aquí
           });
@@ -135,6 +184,9 @@ function PantallaRegistro() {
             }
           },
           className: "swal-custom-bg"
+        })
+        .then(() => {
+          window.location.href = 'http://localhost:3000/sesion'; // Reemplaza con la URL a la que deseas redirigir al usuario
         });
         }
       

@@ -147,7 +147,7 @@ function PantallaSesion() {
             value={usuario}
             onChange={handleChange}
           />
-          <p className='form-usuario-abajo'>Rut</p>
+          <p className='form-usuario-abajo'>RUT</p>
           <input
             type="password"
             placeholder="Contraseña"

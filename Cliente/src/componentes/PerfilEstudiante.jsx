@@ -110,8 +110,8 @@ function PerfilEstudiante() {
           <p className='estudiante-perfil1-descripcion-titulo'>Info: </p>
             <p className='estudiante-perfil1-descripcion-subtitulo'>Genero: {estudiante?.genero}</p>
             <p className='estudiante-perfil1-descripcion-subtitulo'>Edad: {estudiante?.edad}</p>
-            <p className='estudiante-perfil1-descripcion-subtitulo'>Ciudad: {estudiante?.direccion}</p>
-          <p className='estudiante-perfil1-descripcion-titulo'>Interes:</p>
+            <p className='estudiante-perfil1-descripcion-subtitulo'>Dirección: {estudiante?.comuna}, {estudiante?.region}</p>
+          <p className='estudiante-perfil1-descripcion-titulo'>Intereses:</p>
             <p className='estudiante-perfil1-descripcion-subtitulo'>{estudiante?.intereses}</p>
         </div>
       </div>

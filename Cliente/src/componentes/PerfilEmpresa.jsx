@@ -1,8 +1,8 @@
 import '../styles/PerfilEmpresa.css'
 import React, { useState,useEffect } from 'react';
 import { useUser } from './UserContext';
-import { AiFillStar } from 'react-icons/ai';
-import {Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Input, Label, Dropdown, DropdownItem, DropdownMenu, DropdownToggle} from 'reactstrap';
+import { AiFillStar, AiFillEdit,  AiFillDelete } from 'react-icons/ai';
+import {Button, Modal, ModalBody} from 'reactstrap';
 import { BiCommentAdd } from "react-icons/bi";
 import { useLocation } from 'react-router-dom';
 import swal from 'sweetalert';
@@ -153,63 +153,109 @@ function PerfilEmpresa() {
       swal("Error al postular", "Para postular debes de iniciar sesión como estudiante", "warning");
     }
   }
+  const actualizarPuntuacionEmpresa = (idEmpresa, nuevaPuntuacion) => {
+    setEmpresas(empresasAnteriores =>
+      empresasAnteriores.map(empresa =>
+        empresa.id_empresa === idEmpresa
+          ? { ...empresa, puntuacion_total: nuevaPuntuacion }
+          : empresa
+      )
+    );
+  };
+  const verificarPostulacionAceptada = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/postulacion/verificar/${user.id_estudiante}/${idEmpresa}`);
+      const data = await response.json();
+      return data.tienePostulacionAceptada;
+    } catch (error) {
+      console.error('Error al verificar postulaciones', error);
+      return false;
+    }
+  };
   const publicarComentario= async (e) => {
     e.preventDefault();
-    try {
-      const checkResponse = await fetch(`http://localhost:5000/api/comentarios/check/${user.id_estudiante}`);
-      const exists = await checkResponse.json();
-  
-      if (!exists.alreadyApplied) {
-        const datosComentario = {
-          id_estudiante: user.id_estudiante,
-          rating: rating,
-          comentario: comentario,
-        };
-        const agregarResponse = await fetch('http://localhost:5000/api/comentarios/agregar', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(datosComentario),
-        });
-        if (agregarResponse.ok) {
-          swal({
-            title: "¡Se publico el comentario!",
-            icon: "ok",
-            className: "swal-custom-bg",
-            buttons: {
-              confirm: {
-                text: "Aceptar",
-                value: true,
-                visible: true,
-                className: "btn-aceptar",
-                closeModal: true
-              }
-            },
-          });
-          setFeedbacks(false);
-        }
-      } else if (tUsuario === 'empresa'){
-        return;
-      } else {
-        swal({
-          title: "No puedes tener más de un comentario por empresa",
-          icon: "error",
-          className: "swal-custom-bg",
-          buttons: {
-            confirm: {
-              text: "Aceptar",
-              value: true,
-              visible: true,
-              className: "btn-aceptar",
-              closeModal: true
-            }
-          },
-        });
-      }
-    } catch (error) {
-      swal("Error", "Ocurrio un error al comentar", "warning");
+    const tienePostulacionAceptada = await verificarPostulacionAceptada();
+    if (!tienePostulacionAceptada) {
+      swal("No puedes comentar", "Necesitas finalizar una práctica en la empresa para comentar", "warning");
+      return;
     }
+      try {
+        const checkResponse = await fetch(`http://localhost:5000/api/comentarios/check/${user.id_estudiante}`);
+        const exists = await checkResponse.json();
+          if(rating !== 0){
+          if (!exists.alreadyApplied) {
+            const datosComentario = {
+              id_estudiante: user.id_estudiante,
+              id_empresa: idEmpresa,
+              rating: rating,
+              comentario: comentario,
+            };
+            const agregarResponse = await fetch('http://localhost:5000/api/comentarios/agregar', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(datosComentario),
+            });
+            if (agregarResponse.ok) {
+              const data = await agregarResponse.json();
+              swal({
+                title: "¡Se publico el comentario!",
+                icon: "success",
+                className: "swal-custom-bg",
+                buttons: {
+                  confirm: {
+                    text: "Aceptar",
+                    value: true,
+                    visible: true,
+                    className: "btn-aceptar",
+                    closeModal: true
+                  }
+                },
+              });
+              setFeedbacks(prevFeedbacks => [...prevFeedbacks, data.comentario]);
+              actualizarPuntuacionEmpresa(idEmpresa, data.promedioActualizado);
+              setComentar(!comentar);
+            }
+          } else if (tUsuario === 'empresa'){
+            return;
+          } else {
+            swal({
+              title: "No puedes tener más de un comentario por empresa",
+              icon: "error",
+              className: "swal-custom-bg",
+              buttons: {
+                confirm: {
+                  text: "Aceptar",
+                  value: true,
+                  visible: true,
+                  className: "btn-aceptar",
+                  closeModal: true
+                }
+              },
+            });
+            setComentar(!comentar);
+          }
+        } else {
+            swal({
+              title: "¡Debes almenos colocar una estrella!",
+              icon: "error",
+              className: "swal-custom-bg",
+              buttons: {
+                confirm: {
+                  text: "Aceptar",
+                  value: true,
+                  visible: true,
+                  className: "btn-aceptar",
+                  closeModal: true
+                }
+              },
+            });
+        }
+      } catch (error) {
+        swal("Error", "Ocurrio un error al comentar", "warning");
+      }
+    
   }
   const clickOferta = (postulacion) => {
     setAbierto(!abierto);
@@ -303,21 +349,8 @@ function PerfilEmpresa() {
     const empresa = empresas.find((empresa) => empresa.id_empresa === id);
     return empresa;
   };
-  const getDepartamentosPorEmpresa = (id) => {
-    const departamento = departamentos.filter((departamento) => departamento.id_empresa === id);
-    return departamento;
-  };
-  const getPostulaciones = (id) => {
-    const postulacion = postulaciones.filter((postulacion) => postulacion.id_empresa === id);
-    return postulacion;
-  };
-  const empresa = getEmpresaPorId(idEmpresa);
-   
 
-  const departamento =  getDepartamentosPorEmpresa(idEmpresa);
-   
-  
-  const postulacion =  getPostulaciones(idEmpresa);
+  const empresa = getEmpresaPorId(idEmpresa);
  
 
   const binaryData = new Uint8Array(empresa?.logo.data);
@@ -389,6 +422,39 @@ const [puntuacionEmpresa, setPuntuacionEmpresa] = useState(0);
     }
   }
 
+  const borrarComentario = async (idComentario) => {
+    swal({
+      title: "¿Estás seguro?",
+      text: "Una vez borrado, no podrás recuperar este comentario",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    })
+    .then((willDelete) => {
+      if (willDelete) {
+        // Si el usuario confirma, proceder con el borrado
+        realizarBorrado(idComentario);
+      }
+    });
+  }
+  const realizarBorrado = async (idComentario) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/comentarios/borrar/${idComentario}/${idEmpresa}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        swal("Comentario eliminado", "El comentario ha sido eliminado exitosamente", "success");
+        setFeedbacks(feedbacks.filter(feedback => feedback.id_feedback !== idComentario));
+        actualizarPuntuacionEmpresa(idEmpresa, data.promedioActualizado);
+      } else {
+        throw new Error('No se pudo eliminar el comentario');
+      }
+    } catch (error) {
+      swal("Error al eliminar", error.message, "error");
+    }
+  }  
   return(
     <div className='empresa-todo'>
       <div className="empresa-barra">
@@ -401,7 +467,7 @@ const [puntuacionEmpresa, setPuntuacionEmpresa] = useState(0);
         </div>
         <div className='empresa-barra-info'>
           <div className='empresa-barra-info-direcciones'>
-            <p>Dirección: {empresa?.direccion}</p>
+            <p>Dirección: {empresa?.calle_numero}, {empresa?.comuna}, {empresa?.region}</p>
             <p>Número: {empresa?.numero}</p>
             <p>Correo: {empresa?.correo}</p>
           </div>
@@ -525,6 +591,7 @@ const [puntuacionEmpresa, setPuntuacionEmpresa] = useState(0);
           }
           {feedbacks
             .filter(feedback => feedback.id_empresa === idEmpresa)
+            .sort((a, b) => b.id_feedback - a.id_feedback)
             .map((feedbackFiltrado, i) => {
               // Encuentra el estudiante asociado con el feedback
               const estudiante = estudiantes.find(est => est.id_estudiante === feedbackFiltrado.id_estudiante);
@@ -537,11 +604,11 @@ const [puntuacionEmpresa, setPuntuacionEmpresa] = useState(0);
               return (
                 <div className='empresa-comentarios-contenido'>
                   <div className='empresa-comentarios-contenido-p1'>
-                  <img 
-                    src={ logoBase64 && logoBase64.length > 100 ? `data:image/png;base64,${logoBase64}` : require(`../imagenes/usuario-404.png`)} 
-                    alt="" 
-                    className='empresa-comentarios-contenido-imagen'
-                  />
+                    <img 
+                      src={ logoBase64 && logoBase64.length > 100 ? `data:image/png;base64,${logoBase64}` : require(`../imagenes/usuario-404.png`)} 
+                      alt="" 
+                      className='empresa-comentarios-contenido-imagen'
+                    />
                     <div className='empresa-comentarios-contenido-informacion'>
                       <h2 className='empresa-comentarios-contenido-informacion-nombre'>
                         {estudiantes.
@@ -553,19 +620,25 @@ const [puntuacionEmpresa, setPuntuacionEmpresa] = useState(0);
                       <p className='empresa-comentarios-contenido-informacion-descripcion'>{feedbackFiltrado.descripcion}</p>
                     </div>
                   </div>
-                  <p className='empresa-comentarios-contenido-estrellas'>
-                    {[...Array(5)].map((star, i) => {
-                      return (
-                        <AiFillStar 
-                          key={i} 
-                          size={25} 
-                          onClick={() => cambioEstrellas(i)} 
-                          color={i < feedbackFiltrado.puntaje ? "#024e69" : "grey"} 
-                        />
-                      )
-                    })}
-                  </p>
+                  <div className='empresa-comentarios-contenido-p2'>
+                    <p className='empresa-comentarios-contenido-estrellas'>
+                      {[...Array(5)].map((star, i) => {
+                        return (
+                          <AiFillStar 
+                            key={i} 
+                            size={25} 
+                            
+                            color={i < feedbackFiltrado.puntaje ? "#024e69" : "grey"} 
+                          />
+                        )
+                      })}
+                    </p>
+
+                    {feedbackFiltrado.id_estudiante === user?.id_estudiante ? <AiFillDelete className='boton-borrar' onClick={() => borrarComentario(feedbackFiltrado.id_feedback)} size={30}/> : ""}
+                                        
                   </div>
+                  
+                </div>
               );
             })
           }

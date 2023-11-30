@@ -140,9 +140,23 @@
   padding: 8px;
   padding-bottom: 20px;
   justify-content: space-between;
+  
 }
 .empresa-comentarios-contenido-p1{
   display: flex;
+  
+}
+.empresa-comentarios-contenido-p2{
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  justify-content: space-between;
+}
+.editar-comentario{
+ margin-right: 10px;
+}
+.empresa-comentarios{
+  margin-bottom: 50px;
 }
 .empresa-comentarios-inicio{
   display: flex;
@@ -204,7 +218,10 @@
   padding: 3px;
   border: 1px solid  #cccccc;
   font-family: 'Play', sans-serif;
-  overflow: scroll;
+  
+}
+.boton-borrar{
+  cursor: pointer;
 }
 .empresa-comentar-publicar{
   display: flex;

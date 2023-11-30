@@ -1,0 +1,20 @@
+.buscar-empresa-todo{
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px 60px;
+}
+.buscar-empresa-cuadro{
+  height: calc(100vh - 140px);
+}
+.buscar-resultados-barra-orden{
+  font-size: 1.6em;
+  outline: none;
+  cursor: pointer;
+  background-color: #ffffff;
+}
+.guion-nombre{
+  color: black;
+}
+.despues-nombre{
+  color: #0f6580;
+}

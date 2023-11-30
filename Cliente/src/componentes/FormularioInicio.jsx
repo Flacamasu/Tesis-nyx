@@ -32,26 +32,6 @@ function FormularioInicio({data}) {
           onChange={(e) => setPractica(e.target.value)}               
         />
 
-      
-        <select 
-          className='barra-input' 
-          name="rating"
-          value={rating}
-          style={{ display: 'none' }}
-        >
-        </select>
-        <div className='barra-estrellas'>
-          {[...Array(5)].map((star, i) => {
-            return (
-              <AiFillStar 
-                key={i} 
-                size={30} 
-                onClick={() => cambioEstrellas(i)} 
-                color={i < rating ? "#024e69" : "grey"} 
-              />
-            );
-          })}
-        </div>
         <button className='boton-buscar' onClick={handleClick}>Buscar</button>
       </form>
       </div>

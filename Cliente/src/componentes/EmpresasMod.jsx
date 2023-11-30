@@ -1,6 +1,7 @@
 import '../styles/PantallaRegistro.css';
 import React, { useState, useEffect } from 'react';
 import { useUser } from './UserContext';
+import swal from 'sweetalert';
 
 function EmpresasMod() {
   const { user } = useUser();
@@ -11,6 +12,9 @@ function EmpresasMod() {
   const [contraseña, setContraseña] = useState('');
   const [logo, setLogo] = useState('');
   const [descripcion, setDescripcion] = useState('');
+  const [calleNumero, setCalleNumero] = useState('');
+  const [comuna, setComuna] = useState('');
+  const [region, setRegion] = useState('');
   const [direccion, setDireccion] = useState('');
   const [correo, setCorreo] = useState('');
   const [numero, setNumero] = useState('');
@@ -40,7 +44,9 @@ function EmpresasMod() {
         contraseña,
         logo,
         descripcion,
-        direccion,
+        calleNumero,
+        comuna,
+        region,
         correo,
         numero,
       };
@@ -61,7 +67,23 @@ function EmpresasMod() {
 
       // Actualizar el localStorage con los datos actualizados
       localStorage.setItem('usuario', JSON.stringify(usuarioActualizado));
-      window.location.reload();
+      swal({
+        title: "¡Cambios realizados con éxito!",
+        icon: "success",
+        buttons: {
+          confirm: {
+            text: "Aceptar",
+            value: true,
+            visible: true,
+            className: "btn-aceptar",
+            closeModal: true
+          }
+        },
+        className: "swal-custom-bg"
+      })
+      .then(() => {
+        window.location.reload(); // Reemplaza con la URL a la que deseas redirigir al usuario
+      });
     } catch (error) {
       console.error(error);
     }
@@ -107,12 +129,29 @@ function EmpresasMod() {
           <p className='form-usuario-abajo'>Descripción</p>
           <input
             type="text"
-            placeholder={user?.direccion}
+            placeholder={user?.calle_numero}
             className="form-usuario"
-            value={direccion}
-            onChange={(e) => setDireccion(e.target.value)}
+            value={calleNumero}
+            onChange={(e) => setCalleNumero(e.target.value)}
           />
-          <p className='form-usuario-abajo'>Dirección</p>
+          <p className='form-usuario-abajo'>Calle y número</p>
+          <input
+            type="text"
+            placeholder={user?.comuna}
+            className="form-usuario"
+            value={comuna}
+            onChange={(e) => setComuna(e.target.value)}
+          />
+          <p className='form-usuario-abajo'>Comuna</p>
+          <input
+            type="text"
+            placeholder={user?.region}
+            className="form-usuario"
+            value={region}
+            onChange={(e) => setRegion(e.target.value)}
+          />
+          <p className='form-usuario-abajo'>Región</p>
+
           <input
             type="text"
             placeholder={user?.correo}

@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import Buscar from './Rutas/Buscar';
+import BuscarEmpresas from './Rutas/BuscarEmpresas';
+import BuscarEstudiantes from './Rutas/BuscarEstudiantes';
 import Empresas from './Rutas/Empresas';
 import Sesion from './Rutas/Sesion';
 import Registro from './Rutas/Registro';
@@ -15,9 +17,10 @@ import EmpresasModificar from './Rutas/EmpresasModificar';
 import Estudiantes from './Rutas/Estudiantes';
 import EstudiantesModificar from './Rutas/EstudiantesModificar';
 import Postulaciones from './Rutas/Postulaciones';
-//import EstudiantesModificar from './componentes/EstudiantesModificar'; <Route path="/estudiantes/modificar" element={<EstudiantesModificar/>} />
+import Departamentos from './Rutas/Departamentos';
+
 window.initMap = function() {
-  // Por ahora, no necesitas hacer nada aquí, a menos que quieras inicializar un mapa.
+  
   console.log("Google Maps API ha sido inicializada.");
 };
 ReactDOM.render(
@@ -27,8 +30,11 @@ ReactDOM.render(
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="/buscar" element={<Buscar/>} />
+          <Route path="/buscar/empresas" element={<BuscarEmpresas/>} />
+          <Route path="/buscar/estudiantes" element={<BuscarEstudiantes/>} />
           <Route path="/empresas" element={<Empresas/>} />
           <Route path="/empresas/modificar" element={<EmpresasModificar/>} />
+          <Route path="/empresas/departamentos" element={<Departamentos/>} />
           <Route path="/sesion" element={<Sesion/>} />
           <Route path="/sesion/registro" element={<Registro/>} />
           <Route path="/ofertas/crear" element={<OfertasCrear/>} />
@@ -36,6 +42,8 @@ ReactDOM.render(
           <Route path="/estudiantes" element={<Estudiantes/>} />
           <Route path="/estudiantes/postulaciones" element={<Postulaciones/>} />
           <Route path="/estudiantes/modificar" element={<EstudiantesModificar/>} />
+          
+          
         </Routes>
       </BrowserRouter>
     </UserProvider>

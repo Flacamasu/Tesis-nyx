@@ -159,7 +159,22 @@ app.post('/api/empresaRegistro', upload.single('logo'), (req, res) => {
         res.status(500).send('Error al registrar el usuario');
         return;
       }
-      // Usuario registrado exitosamente
+      // Prepara el mensaje de correo electrónico
+      const mailOptions = {
+        from: 'nyx.practicas@gmail.com',
+        to: correo, // Correo del usuariNombre de o registrado
+        subject: 'Registro Exitoso en Nyx',
+        text: `Hola ${nombre},\n\nTu registro en Nyx como empresa ha sido exitoso.\n\nSaludos,\nEquipo de Nyx`
+        // Puedes usar 'html' en lugar de 'text' si quieres enviar un correo electrónico HTML
+      };
+      // Envía el correo electrónico
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error al enviar el correo electrónico:', error);
+        } else {
+          console.log('Correo enviado: ' + info.response);
+        }
+      });
       res.status(201).json({ usuario: { id: result.insertId, nombre, usuario, contrasena, logo: logoBuffer, descripcion, correo, numero } });
     });
   } catch (error) {
@@ -184,19 +199,20 @@ app.post('/api/estudianteRegistro', upload.single('imagen'), (req, res) => {
       // Usuario registrado exitosamente
       const mailOptions = {
         from: 'nyx.practicas@gmail.com',
-        to: correo, // El email del usuario registrado
-        subject: 'Registro Exitoso',
-        text: '¡Te has registrado con éxito en Nyx!'
+        to: correo, // Correo del usuario registrado
+        subject: 'Registro Exitoso en Nyx',
+        text: `Hola ${nombre},\n\nTu registro en Nyx como empresa ha sido exitoso.\n\nSaludos,\nEquipo de Nyx`
+        // Puedes usar 'html' en lugar de 'text' si quieres enviar un correo electrónico HTML
       };
-    
-      transporter.sendMail(mailOptions, function(error, info){
+      // Envía el correo electrónico
+      transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-          console.log(error);
-          res.status(500).json({ error: 'Error al enviar el correo' });
-        } 
-          res.status(201).json({ usuario: { id: result.insertId, usuario, nombre, telefono, carrera, descripcion, correo, contrasena, especialidad, genero, edad, intereses, proyectos, habilidades, conocimientos, estudios } });
-        
+          console.error('Error al enviar el correo electrónico:', error);
+        } else {
+          console.log('Correo enviado: ' + info.response);
+        }
       });
+      res.status(201).json({ usuario: { id: result.insertId, usuario, nombre, telefono, carrera, descripcion, correo, contrasena, especialidad, genero, edad, intereses, proyectos, habilidades, conocimientos, estudios } });
   
     });
   } catch (error) {
@@ -207,28 +223,52 @@ app.post('/api/estudianteRegistro', upload.single('imagen'), (req, res) => {
 
 app.post('/api/ofertas/agregar', (req, res) => {
   try {
-    const { id_empresa, titulo, empresa, puntuacion, departamento, tags, descripcion, remuneracion, fecha } = req.body;
-    
+    const { id_empresa, titulo, empresa, puntuacion, departamento, tags, descripcion, remuneracion, fecha, horario, modalidad, calleNumero, comuna, region } = req.body;
+    const estado = 'Oferta';
     // Consulta SQL para insertar el nueva oferta en la base de datos
-    const sql = 'INSERT INTO postulaciones (id_empresa, titulo, empresa, puntuacion, departamento, tags, descripcion, remuneracion, fecha) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const sql = 'INSERT INTO ofertas (id_empresa, titulo, departamento, tags, descripcion, remuneracion, fecha, horario, modalidad, calle_numero, comuna, region, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? ,? ,?, ?, ?)';
     
-    db.query(sql, [id_empresa, titulo, empresa, puntuacion, departamento, tags, descripcion, remuneracion, fecha], (err, result) => {
+    db.query(sql, [id_empresa, titulo, departamento, tags, descripcion, remuneracion, fecha, horario, modalidad, calleNumero, comuna, region, estado], (err, result) => {
       if (err) {
         console.error(err);
         res.status(500).send('Error al registrar el usuario');
         return;
       }
       // Usuario registrado exitosamente
-      res.status(201).json({ postulaciones: { id: result.insertId, id_empresa, titulo, empresa, puntuacion, departamento, tags, descripcion, remuneracion, fecha} });
+      res.status(201).json({ postulaciones: { id: result.insertId, id_empresa, titulo, empresa, puntuacion, departamento, tags, descripcion, remuneracion, fecha, horario, modalidad, calleNumero, comuna, region, estado} });
     });
   } catch (error) {
     console.error(error);
     res.status(500).send('Error interno del servidor');
   }
 });
+
+app.post('/api/departamentos/agregar', (req, res) => {
+  try {
+    const { id_empresa, nombre } = req.body;
+    
+    // Consulta SQL para insertar el nueva oferta en la base de datos
+    const sql = 'INSERT INTO departamentos (id_empresa, nombre) VALUES (?, ?)';
+    
+    db.query(sql, [id_empresa, nombre], (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error al registrar el usuario');
+        return;
+      }
+      // Usuario registrado exitosamente
+      res.status(201).json({ departamento: {id_departamentos: result.insertId, id_empresa, nombre}});
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error interno del servidor');
+  }
+});
+
+
 app.post('/api/usuarios/modificar', async (req, res) => {
   try {
-    const { id, nombre, usuario, contraseña, descripcion, direccion, correo, numero } = req.body;
+    const { id, nombre, usuario, contraseña, descripcion, calleNumero,comuna,region, correo, numero } = req.body;
     
     if (!id) {
       res.status(400).send('El ID del usuario es obligatorio');
@@ -255,9 +295,17 @@ app.post('/api/usuarios/modificar', async (req, res) => {
       sql += 'descripcion = ?, ';
       values.push(descripcion);
     }
-    if (direccion) {
-      sql += 'direccion = ?, ';
-      values.push(direccion);
+    if (calleNumero) {
+      sql += 'calle_numero = ?, ';
+      values.push(calleNumero);
+    }
+    if (comuna) {
+      sql += 'comuna = ?, ';
+      values.push(comuna);
+    }
+    if (region) {
+      sql += 'region = ?, ';
+      values.push(region);
     }
     if (correo) {
       sql += 'correo = ?, ';
@@ -429,7 +477,7 @@ app.post('/api/estudiantes/modificar', async (req, res) => {
 
 app.post('/api/ofertas/modificar', async (req, res) => {
   try {
-    const { id, titulo, departamentoBack, tags, descripcion, remuneracion, modalidad} = req.body;
+    const { id, titulo, departamentoBack, tags, descripcion, remuneracion, horario, modalidad} = req.body;
     
     if (!id) {
       res.status(400).send('El ID del usuario es obligatorio');
@@ -459,6 +507,10 @@ app.post('/api/ofertas/modificar', async (req, res) => {
     if (remuneracion) {
       sql += 'remuneracion = ?, ';
       values.push(remuneracion);
+    }
+    if (horario) {
+      sql += 'horario = ?, ';
+      values.push(horario);
     }
     if (modalidad) {
       sql += 'modalidad = ?, ';
@@ -876,6 +928,52 @@ app.delete('/api/postulaciones/:id', (req, res) => {
   });
 });
 
+app.delete('/api/comentarios/borrar/:id/:idEmpresa', (req, res) => {
+ 
+  const { id, idEmpresa } = req.params;
+  console.log(req.params)
+  // Aquí iría cualquier lógica de validación o autenticación necesaria...
+
+  // Lógica para eliminar la oferta en la base de datos
+  const sql = 'DELETE FROM feedbacks WHERE id_feedback = ?';
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      // Manejo de errores de la base de datos
+      console.error(err);
+      res.status(500).send('Error al eliminar la oferta');
+      return;
+    }
+
+    if (result.affectedRows === 0) {
+      res.status(404).send('Comentario no encontrado');
+      return;
+    }
+    
+    const sqlCalcularPromedio = 'SELECT AVG(puntaje) as promedio FROM feedbacks WHERE id_empresa = ?';
+    db.query(sqlCalcularPromedio, [idEmpresa], (err, resultPromedio) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error al calcular el promedio');
+        return;
+      }
+
+      const promedio = resultPromedio[0].promedio;
+
+      // Actualizando la puntuación total en la tabla empresas
+      const sqlActualizarEmpresa = 'UPDATE empresas SET puntuacion_total = ? WHERE id_empresa = ?';
+      db.query(sqlActualizarEmpresa, [promedio, idEmpresa], (err, resultUpdate) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send('Error al actualizar la puntuación en la empresa');
+          return;
+        }
+
+        res.status(201).json({ promedioActualizado: promedio});
+      });
+    });
+  });
+});
+
 app.post('/api/postulaciones/agregarEstudiante', (req, res) => {
   const { id_oferta, rutEstudiante } = req.body;
   const estado = 'Aceptada';
@@ -917,5 +1015,259 @@ app.get('/api/comentarios/check/:id_estudiante', (req, res) => {
       return;
     }
     res.json({ alreadyApplied: result.length > 0 });
+  });
+});
+
+app.post('/api/comentarios/agregar', (req, res) => {
+  const {  id_empresa, id_estudiante, rating, comentario } = req.body;
+
+  const fecha = new Date().toISOString().slice(0, 10); // Formato AAAA-MM-DD
+
+  // Primero, encontrar el id_estudiante basado en el rutEstudiante
+  
+
+    const sqlInsertarComentario = 'INSERT INTO feedbacks (id_empresa, id_estudiante, puntaje, descripcion, fecha) VALUES (?, ?, ?, ?, ?)';
+    db.query(sqlInsertarComentario, [id_empresa, id_estudiante, rating, comentario, fecha], (err, result) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error al registrar la postulación');
+        return;
+      }
+      // Calculando el promedio de puntuaciones
+    const sqlCalcularPromedio = 'SELECT AVG(puntaje) as promedio FROM feedbacks WHERE id_empresa = ?';
+    db.query(sqlCalcularPromedio, [id_empresa], (err, resultPromedio) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error al calcular el promedio');
+        return;
+      }
+
+      const promedio = resultPromedio[0].promedio;
+
+      // Actualizando la puntuación total en la tabla empresas
+      const sqlActualizarEmpresa = 'UPDATE empresas SET puntuacion_total = ? WHERE id_empresa = ?';
+      db.query(sqlActualizarEmpresa, [promedio, id_empresa], (err, resultUpdate) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send('Error al actualizar la puntuación en la empresa');
+          return;
+        }
+
+        res.status(201).json({ comentario: { id_feedback: result.insertId, id_empresa, id_estudiante, puntaje: rating, descripcion: comentario, fecha}, promedioActualizado: promedio, agregar: true });
+      });
+    });
+  });
+});
+
+app.get('/api/postulacion/verificar/:id_estudiante/:id_empresa', (req, res) => {
+  const { id_estudiante, id_empresa } = req.params;
+  const sql = `
+    SELECT p.* FROM postulaciones p
+    INNER JOIN ofertas o ON p.id_oferta = o.id_oferta
+    WHERE p.id_estudiante = ? AND o.id_empresa = ? AND p.estado = 'Aceptada'
+  `;
+  db.query(sql, [id_estudiante, id_empresa], (err, result) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error al verificar las postulaciones');
+      return;
+    }
+    res.json({ tienePostulacionAceptada: result.length > 0 });
+  });
+});
+
+app.put('/api/departamentos/actualizar/:id', (req, res) => {
+  const { id } = req.params;
+  const { nombre, nombreAntiguo } = req.body;  // Asumiendo que también envías el nombre antiguo del departamento
+
+  if (!nombre) {
+    return res.status(400).send('El nombre del departamento es obligatorio');
+  }
+
+  const sqlActualizarDepartamento = 'UPDATE departamentos SET nombre = ? WHERE id_departamentos = ?';
+  const sqlActualizarOfertas = 'UPDATE ofertas SET departamento = ? WHERE departamento = ?';
+
+  db.query(sqlActualizarDepartamento, [nombre, id], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Error al actualizar el departamento');
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Departamento no encontrado');
+    }
+
+    // Actualizar las ofertas asociadas a este departamento
+    db.query(sqlActualizarOfertas, [nombre, nombreAntiguo], (err, resultOfertas) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send('Error al actualizar las ofertas');
+      }
+
+      res.status(200).send({ mensaje: 'Departamento y ofertas actualizados correctamente' });
+    });
+  });
+});
+
+
+app.delete('/api/departamentos/eliminar/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const sqlEsOtro = 'SELECT nombre FROM departamentos WHERE id_departamentos = ?';
+    const [departamento] = await db.promise().query(sqlEsOtro, [id]);
+
+    if (departamento[0].nombre === 'Otro') {
+      // Verificar si hay ofertas asignadas a 'Otro'
+      const sqlVerificarOfertas = 'SELECT COUNT(*) AS count FROM ofertas WHERE departamento = "Otro"';
+      const [ofertas] = await db.promise().query(sqlVerificarOfertas);
+
+      if (ofertas[0].count > 0) {
+        return res.json({ mensaje: 'Hay una oferta en otro', ofertaOtro: true });
+      }
+    }
+    // Verificar si hay ofertas en el departamento a eliminar
+    const sqlVerificarOfertas = 'SELECT COUNT(*) AS count FROM ofertas WHERE departamento = (SELECT nombre FROM departamentos WHERE id_departamentos = ?)';
+    const [ofertas] = await db.promise().query(sqlVerificarOfertas, [id]);
+
+    let otroCreado = false;
+    let departamentoOtro = null;
+
+    if (ofertas[0].count > 0) {
+      // Verificar si existe el departamento 'Otro'
+      const sqlBuscarDepartamentoOtro = 'SELECT id_departamentos FROM departamentos WHERE nombre = "Otro" AND id_empresa = (SELECT id_empresa FROM departamentos WHERE id_departamentos = ?)';
+      const [otro] = await db.promise().query(sqlBuscarDepartamentoOtro, [id]);
+
+      // Si no existe, crearlo
+      if (otro.length === 0) {
+        const sqlObtenerIdEmpresa = 'SELECT id_empresa FROM departamentos WHERE id_departamentos = ?';
+        const [empresa] = await db.promise().query(sqlObtenerIdEmpresa, [id]);
+
+        if (empresa.length > 0) {
+          const id_empresa = empresa[0].id_empresa;
+          const sqlCrearDepartamentoOtro = 'INSERT INTO departamentos (nombre, id_empresa) VALUES ("Otro", ?)';
+          const [insertResult] = await db.promise().query(sqlCrearDepartamentoOtro, [id_empresa]);
+          otroCreado = true;
+          departamentoOtro = { id_departamentos: insertResult.insertId, nombre: 'Otro', id_empresa: id_empresa };
+        }
+      }
+
+      // Mover las ofertas al departamento 'Otro'
+      const sqlMoverOfertas = 'UPDATE ofertas SET departamento = "Otro" WHERE departamento = (SELECT nombre FROM departamentos WHERE id_departamentos = ?)';
+      await db.promise().query(sqlMoverOfertas, [id]);
+    }
+
+    // Eliminar el departamento
+    const sqlEliminarDepartamento = 'DELETE FROM departamentos WHERE id_departamentos = ?';
+    const [result] = await db.promise().query(sqlEliminarDepartamento, [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).send('Departamento no encontrado');
+    }
+
+    res.json({ mensaje: 'Departamento eliminado y ofertas actualizadas correctamente', otroCreado, departamentoOtro });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error al eliminar el departamento');
+  }
+});
+
+
+
+
+
+app.get('/api/departamentos/check/:nombre', (req, res) => {
+  const { nombre } = req.params;
+  
+  const sql = 'SELECT COUNT(*) AS count FROM departamentos WHERE nombre = ?';
+  db.query(sql, [nombre], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send('Error al verificar el departamento');
+    }
+
+    if (result[0].count > 0) {
+      res.json({ existe: true });
+    } else {
+      res.json({ existe: false });
+    }
+  });
+});
+
+app.get('/api/buscarEmpresas', (req, res) => {
+  const { empresa, ordenar } = req.query;
+  if (!empresa || empresa.trim() === '') {
+    // Si está vacío, no devolver ningún estudiante
+    return res.status(400).send('El término de búsqueda está vacío');
+  }
+  let baseSQL = `
+    SELECT 
+      empresas.*, 
+      COUNT(ofertas.id_oferta) AS cantidad_ofertas,
+      (SELECT COUNT(*) FROM postulaciones 
+        JOIN ofertas ON postulaciones.id_oferta = ofertas.id_oferta
+        WHERE ofertas.id_empresa = empresas.id_empresa) AS cantidad_postulaciones
+    FROM empresas
+  `;
+  let joinClause = 'LEFT JOIN ofertas ON empresas.id_empresa = ofertas.id_empresa';
+  let whereClauses = [];
+  let groupByClause = 'GROUP BY empresas.id_empresa';
+  let orderClause = '';
+
+  if (empresa) {
+    whereClauses.push(`(empresas.nombre LIKE '%${empresa}%' OR empresas.descripcion LIKE '%${empresa}%')`);
+  }
+
+  if (ordenar === 'valoracion') {
+    orderClause = 'ORDER BY empresas.puntuacion_total DESC';
+  } else if (ordenar === 'popularidad') {
+    orderClause = 'ORDER BY cantidad_postulaciones DESC';
+  } else if (ordenar === 'ofertas') {
+    orderClause = 'ORDER BY cantidad_ofertas DESC';
+  }
+
+  let sql = `${baseSQL} ${joinClause} ${whereClauses.length > 0 ? 'WHERE ' + whereClauses.join(' AND ') : ''} ${groupByClause} ${orderClause}`;
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send('Error al realizar la búsqueda');
+    }
+    res.send(result);
+  });
+});
+
+app.get('/api/buscarEstudiantes', (req, res) => {
+  const { estudiante } = req.query;
+  if (!estudiante || estudiante.trim() === '') {
+    // Si está vacío, no devolver ningún estudiante
+    return res.status(400).send('El término de búsqueda está vacío');
+  }
+  let sql = `
+    SELECT * FROM estudiantes 
+    WHERE 
+      nombre LIKE ? OR 
+      carrera LIKE ? OR 
+      especialidad LIKE ? OR 
+      descripcion LIKE ? OR 
+      intereses LIKE ? OR 
+      proyectos LIKE ? OR 
+      habilidades LIKE ? OR 
+      conocimientos LIKE ? OR 
+      estudios LIKE ? OR 
+      calle_numero LIKE ? OR 
+      region LIKE ? OR 
+      comuna LIKE ?
+  `;
+
+  let searchQuery = `%${estudiante}%`;
+  let queryValues = Array(14).fill(searchQuery); // 14 campos a buscar
+
+  db.query(sql, queryValues, (err, result) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).send('Error al realizar la búsqueda');
+    }
+    res.send(result);
   });
 });

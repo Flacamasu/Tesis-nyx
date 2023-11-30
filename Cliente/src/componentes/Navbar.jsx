@@ -31,10 +31,10 @@ function Navbar(props) {
             <a href="/buscar"><p>Buscar</p></a>
           </li>
           <li className='opcion-navegar opcion-navegar-empresas'>
-            <a href="/empresas"><p>Empresas</p></a>
+            <a href="/buscar/empresas"><p>Empresas</p></a>
           </li>
           <li className='opcion-navegar opcion-navegar-estudiantes'>
-            <a href="/empresas"><p>Estudiantes</p></a>
+            <a href="/buscar/estudiantes"><p>Estudiantes</p></a>
           </li>
         </div>
 
@@ -52,7 +52,7 @@ function Navbar(props) {
                 <>
                   <a href={`/empresas/?id=${user.id_empresa}`}><DropdownItem className='opcion-navegar-opciones'>Ver perfil</DropdownItem></a>
                   <a href="/empresas/modificar"><DropdownItem className='opcion-navegar-opciones'>Modificar perfil</DropdownItem></a>
-                  <a href="/empresas/modificar"><DropdownItem className='opcion-navegar-opciones'>Ver departamentos</DropdownItem></a>
+                  <a href="/empresas/departamentos"><DropdownItem className='opcion-navegar-opciones'>Ver departamentos</DropdownItem></a>
                   <a href="/ofertas/crear"><DropdownItem className='opcion-navegar-opciones'>Crear oferta</DropdownItem></a>
                   <a href="/ofertas/modificar"><DropdownItem className='opcion-navegar-opciones'>Ver/Modificar ofertas</DropdownItem></a>
                   <DropdownItem className='opcion-navegar-opciones' onClick={cerrarSesion}>Cerrar sesión</DropdownItem>

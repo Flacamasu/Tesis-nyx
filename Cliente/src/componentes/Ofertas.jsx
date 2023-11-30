@@ -19,6 +19,7 @@ function Ofertas() {
   const [remuneracion, setRemuneracion] = useState(ofertaSeleccionada?.remuneracion);
   const [modalidad, setModalidad] = useState(ofertaSeleccionada?.modalidad);
   const [ofertas, setOfertas] = useState([]);
+  const [horario, setHorario] = useState('');
   const [empresas, setEmpresas] = useState([]);
   const [estudiantes, setEstudiantes] = useState([]);
   const [postulaciones, setPostulaciones] = useState([]);
@@ -357,6 +358,7 @@ function Ofertas() {
         tags,
         descripcion,
         remuneracion,
+        horario,
         modalidad
       };
       
@@ -871,6 +873,20 @@ function Ofertas() {
                   value={remuneracion}
                 />
                 <p className='form-usuario-abajo'>Remuneración</p>
+                <select
+                  id="departamento"
+                  value={horario}
+                  onChange={(e) => setHorario(e.target.value)}
+                >
+                  {/* Mostrar el horario actual */}
+                  {ofertaSeleccionada?.horario && <option value={ofertaSeleccionada.horario}>{ofertaSeleccionada.horario}</option>}
+
+                  {/* Mostrar los otros horarios */}
+                  {ofertaSeleccionada?.horario !== 'Full-Time' && <option value="Full-Time">Full-time</option>}
+                  {ofertaSeleccionada?.horario !== 'Part-Time' && <option value="Part-Time">Part-time</option>}
+                  {ofertaSeleccionada?.horario !== 'Flexible' && <option value="Flexible">Flexible</option>}
+                </select>
+                <p className='form-usuario-abajo'>Horario</p>
                 <select id="departamento"  onChange={(e) => setModalidad(e.target.value)}>
                   <option>{ofertaSeleccionada?.modalidad}</option>
                   {ofertaSeleccionada?.modalidad === 'Presencial' ? <option>Remoto</option> : <option>Presencial</option>}
