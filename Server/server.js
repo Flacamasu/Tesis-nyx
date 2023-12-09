@@ -11,7 +11,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 
 const googleMapsClient = require('@google/maps').createClient({
-  key: 'AIzaSyCtD52oDPKnKhLFx-SZApvdIgDIerAiwYE',
+  key: '',
   Promise: Promise
 });
 app.use(bodyParser.json({ limit: '50mb' }));
@@ -28,7 +28,7 @@ const transporter = nodemailer.createTransport({
   service: 'gmail', // Ejemplo usando Gmail
   auth: {
     user: 'nyx.practicas@gmail.com',
-    pass: 'eoaw jimm liqs wzrq'
+    pass: ''
   }
 });
 
